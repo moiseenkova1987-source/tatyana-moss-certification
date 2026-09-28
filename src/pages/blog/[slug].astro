@@ -1,0 +1,41 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { articles } from '../../data/articles';
+import { site, url } from '../../data/site';
+export function getStaticPaths() {
+  return site.features.blog
+    ? articles
+        .filter((a) => !a.draft && a.sections.length)
+        .map((article) => ({ params: { slug: article.slug }, props: { article } }))
+    : [];
+}
+const { article } = Astro.props;
+---
+
+<Layout
+  title={`${article.title} | Татьяна Мосс`}
+  description={article.description}
+  crumbs={[
+    { name: 'База знаний', path: '/blog/' },
+    { name: article.title, path: `/blog/${article.slug}/` },
+  ]}
+>
+  <section class="page-hero">
+    <p class="eyebrow">База знаний</p>
+    <h1>{article.title}</h1>
+    <p class="lead">{article.description}</p>
+  </section>
+  <article class="prose">
+    {article.sections.map((s) => (
+      <section>
+        <h2>{s.heading}</h2>
+        <p>{s.text}</p>
+      </section>
+    ))}
+    <div class="actions">
+      <a class="button" href={url('/proverka-tovara/')}>
+        Разобрать мой товар ↗
+      </a>
+    </div>
+  </article>
+</Layout>

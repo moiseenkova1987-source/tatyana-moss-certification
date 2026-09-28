@@ -1,0 +1,322 @@
+{
+  "results": [
+    {
+      "width": 360,
+      "route": "/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/services/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/proverka-tovara/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/deklaraciya-sootvetstviya/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/sertifikaciya-produkcii/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/otkaznoe-pismo/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/vvoz-obrazcov/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/import-iz-kitaya/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/marketplaces/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/about/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/contacts/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/privacy-policy/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/personal-data-consent/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/services/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/proverka-tovara/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/deklaraciya-sootvetstviya/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/sertifikaciya-produkcii/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/otkaznoe-pismo/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/vvoz-obrazcov/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/import-iz-kitaya/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/marketplaces/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/about/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/contacts/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/privacy-policy/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/personal-data-consent/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/services/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/proverka-tovara/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/deklaraciya-sootvetstviya/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/sertifikaciya-produkcii/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/otkaznoe-pismo/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/vvoz-obrazcov/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/import-iz-kitaya/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/marketplaces/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/about/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/contacts/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/privacy-policy/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/personal-data-consent/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/services/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/proverka-tovara/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/deklaraciya-sootvetstviya/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/sertifikaciya-produkcii/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/otkaznoe-pismo/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/vvoz-obrazcov/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/import-iz-kitaya/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/marketplaces/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/about/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/contacts/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/privacy-policy/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/personal-data-consent/",
+      "status": 200,
+      "overflow": false
+    }
+  ],
+  "form": {
+    "defaultDisabled": true,
+    "consentRequired": true,
+    "successAndErrorMocked": true
+  },
+  "errors": []
+}

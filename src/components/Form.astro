@@ -1,0 +1,174 @@
+---
+import { site, url } from '../data/site';
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT || '';
+const enabled =
+  /^https:\/\//.test(endpoint) && site.legal.ready && !!site.legal.operator && !!site.email;
+---
+
+<section class="request" id="request">
+  <div>
+    <p class="eyebrow">Начнём с вашего товара</p>
+    <h2>
+      Что планируете
+      <br />
+      продавать?
+    </h2>
+    <p class="lead">
+      Расскажите о товаре и задаче. Ссылка, описание или вопрос — хороший первый шаг.
+    </p>
+    {!enabled && (
+      <p class="form-notice">
+        Онлайн-отправка заявки пока недоступна. Форма не передает данные.
+        {site.email && (
+          <>
+            {' '}
+            Напишите на <a href={`mailto:${site.email}`}>{site.email}</a>.
+          </>
+        )}
+        {site.telegram && (
+          <>
+            {' '}
+            Или свяжитесь в <a href={site.telegram}>Telegram</a>.
+          </>
+        )}
+      </p>
+    )}
+    <p class="inline-note">
+      Проверка товара — 1 500 ₽.
+      <br />
+      Стоимость засчитывается в дальнейшее сопровождение.
+    </p>
+  </div>
+  <form data-lead-form data-endpoint={enabled ? endpoint : ''} aria-label="Заявка на консультацию">
+    <div class="form-grid">
+      <label class="field">
+        Имя *
+        <input
+          name="name"
+          autocomplete="name"
+          required
+          maxlength="100"
+          placeholder="Как к вам обращаться"
+        />
+      </label>
+      <label class="field">
+        Телефон или Telegram *
+        <input
+          name="contact"
+          autocomplete="tel"
+          required
+          minlength="3"
+          maxlength="100"
+          placeholder="+7 или @username"
+        />
+      </label>
+      <label class="field">
+        E-mail *
+        <input
+          type="email"
+          name="email"
+          autocomplete="email"
+          required
+          maxlength="254"
+          placeholder="you@example.ru"
+        />
+      </label>
+      <label class="field">
+        Название товара *
+        <input name="product" required maxlength="200" placeholder="Что планируете продавать" />
+      </label>
+      <label class="field wide">
+        Ссылка на товар <span class="form-hint">Необязательно</span>
+        <input type="url" name="productUrl" maxlength="2000" placeholder="https://" />
+      </label>
+      <label class="field wide">
+        Что требуется / комментарий
+        <input name="subject" type="hidden" value="Консультация" />
+        <textarea
+          name="comment"
+          rows="3"
+          maxlength="5000"
+          placeholder="Какая задача стоит перед вами?"
+        ></textarea>
+      </label>
+    </div>
+    <label class="consent">
+      <input type="checkbox" name="consent" required value="accepted" />
+      <span>
+        Я даю <a href={url('/personal-data-consent/')}>согласие на обработку персональных данных</a>{' '}
+        и ознакомлен(а) с{' '}
+        <a href={url('/privacy-policy/')}>Политикой обработки персональных данных</a>.
+      </span>
+    </label>
+    <div class="form-footer">
+      <button class="button" type="submit" disabled={!enabled}>
+        {enabled ? 'Отправить заявку' : 'Отправка пока недоступна'}{' '}
+        <span aria-hidden="true">↗</span>
+      </button>
+      <p class="form-hint">* Обязательные поля. Не отправляйте паспортные и платежные данные.</p>
+    </div>
+    <p class="form-status" role="status" aria-live="polite"></p>
+    <noscript>
+      <p class="form-notice">
+        Для отправки формы требуется JavaScript. Используйте опубликованные контакты для прямого
+        обращения.
+      </p>
+    </noscript>
+  </form>
+</section>
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-lead-form]').forEach((form) => {
+    const subject = form.querySelector<HTMLInputElement>('[name="subject"]')!;
+    subject.value = (
+      new URLSearchParams(location.search).get('service') ||
+      document.querySelector('h1')?.textContent ||
+      'Консультация'
+    )
+      .trim()
+      .slice(0, 200);
+    let pending = false;
+    let requestId = crypto.randomUUID();
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const status = form.querySelector<HTMLElement>('.form-status')!;
+      const endpoint = form.dataset.endpoint;
+      if (!endpoint) {
+        status.textContent = 'Отправка недоступна. Данные не были переданы.';
+        return;
+      }
+      if (pending || !form.reportValidity()) return;
+      const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      pending = true;
+      button.disabled = true;
+      status.textContent = 'Отправляем заявку…';
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...Object.fromEntries(new FormData(form)),
+            consentVersion: '1.0',
+            requestId,
+          }),
+          signal: controller.signal,
+          credentials: 'omit',
+          referrerPolicy: 'no-referrer',
+        });
+        const data = await response.json();
+        if (!response.ok || data.ok !== true) throw new Error('Not accepted');
+        status.textContent = 'Заявка принята. Спасибо! Свяжемся с вами по указанным контактам.';
+        form.reset();
+        requestId = crypto.randomUUID();
+      } catch {
+        status.textContent =
+          'Не удалось подтвердить прием заявки. Попробуйте еще раз или используйте прямые контакты.';
+      } finally {
+        clearTimeout(timeout);
+        pending = false;
+        button.disabled = false;
+      }
+    });
+  });
+</script>

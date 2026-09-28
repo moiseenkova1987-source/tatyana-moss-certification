@@ -1,0 +1,216 @@
+---
+import '../styles/global.css';
+import { site, url, navigation, live } from '../data/site';
+import type { FAQ } from '../data/services';
+const {
+  title,
+  description,
+  crumbs = [],
+  faq = [],
+  service,
+  noindex = false,
+} = Astro.props as {
+  title: string;
+  description: string;
+  crumbs?: { name: string; path: string }[];
+  faq?: FAQ[];
+  service?: string;
+  noindex?: boolean;
+};
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const home = new URL(url('/'), Astro.site).href;
+const expertId = `${home}#expert`;
+const orgId = `${home}#consulting`;
+const graph: Record<string, unknown>[] = [
+  {
+    '@type': 'ProfessionalService',
+    '@id': orgId,
+    name: site.brand,
+    url: home,
+    description: 'Консультации и экспертное сопровождение процедур в сфере сертификации продукции',
+    ...(site.name ? { founder: { '@id': expertId } } : {}),
+  },
+  ...(site.name
+    ? [
+        {
+          '@type': 'Person',
+          '@id': expertId,
+          name: site.name,
+          jobTitle: 'Эксперт по сертификации продукции',
+          description: '15 лет профессионального опыта в сфере сертификации продукции',
+          url: home,
+          ...(site.telegram ? { sameAs: [site.telegram] } : {}),
+        },
+      ]
+    : []),
+  ...(service
+    ? [
+        {
+          '@type': 'Service',
+          name: service,
+          provider: { '@id': site.name ? expertId : orgId },
+          url: canonical,
+          serviceType: 'Экспертное сопровождение и консультация',
+        },
+      ]
+    : []),
+  ...(crumbs.length
+    ? [
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [{ name: 'Главная', path: '/' }, ...crumbs].map((c, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: c.name,
+            item: new URL(url(c.path), Astro.site).href,
+          })),
+        },
+      ]
+    : []),
+  ...(faq.length
+    ? [
+        {
+          '@type': 'FAQPage',
+          mainEntity: faq.map((f) => ({
+            '@type': 'Question',
+            name: f.q,
+            acceptedAnswer: { '@type': 'Answer', text: f.a },
+          })),
+        },
+      ]
+    : []),
+];
+const ad = site.accreditation;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f9fc" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={!live || noindex ? 'noindex, nofollow' : 'index, follow'} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content={site.brand} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {import.meta.env.PUBLIC_YANDEX_VERIFICATION && (
+      <meta name="yandex-verification" content={import.meta.env.PUBLIC_YANDEX_VERIFICATION} />
+    )}
+    {import.meta.env.PUBLIC_GOOGLE_VERIFICATION && (
+      <meta name="google-site-verification" content={import.meta.env.PUBLIC_GOOGLE_VERIFICATION} />
+    )}
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(
+        /</g,
+        '\u003c',
+      )}
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      К содержанию
+    </a>
+    <header class="header">
+      <div class="container header-inner">
+        <a class="brand" href={url('/')} aria-label="Эксперт по сертификации — главная">
+          <span class="brand-mark" aria-hidden="true">
+            э.
+          </span>
+          <span>
+            {site.name || 'Эксперт по сертификации'}
+            <small>Продукция. Требования. Решения.</small>
+          </span>
+        </a>
+        <nav aria-label="Основное меню">
+          {navigation.map(([label, href]) => (
+            <a
+              href={url(href)}
+              aria-current={Astro.url.pathname === url(href) ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+        <a class="header-cta" href={`${url('/contacts/')}#request`}>
+          Обсудить задачу <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </header>
+    <main id="main" class="container">
+      {crumbs.length > 0 && (
+        <nav class="breadcrumbs" aria-label="Хлебные крошки">
+          <a href={url('/')}>Главная</a>
+          {crumbs.map((c, i) => (
+            <>
+              <span aria-hidden="true">/</span>
+              {i === crumbs.length - 1 ? (
+                <span aria-current="page">{c.name}</span>
+              ) : (
+                <a href={url(c.path)}>{c.name}</a>
+              )}
+            </>
+          ))}
+        </nav>
+      )}
+      <slot />
+    </main>
+    {ad.enabled && ad.name && ad.registryNumber && /^https:\/\//.test(ad.registryUrl) && (
+      <aside class="container accreditation">
+        <p>
+          Работы по оценке (подтверждению) соответствия выполняются соответствующими
+          аккредитованными участниками процедуры.
+        </p>
+        <p>
+          {ad.name} · № {ad.registryNumber} ·{' '}
+          <a href={ad.registryUrl} rel="noopener noreferrer" target="_blank">
+            Запись в реестре
+          </a>
+        </p>
+      </aside>
+    )}
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-top">
+          <a class="brand" href={url('/')}>
+            <span class="brand-mark" aria-hidden="true">
+              э.
+            </span>
+            <span>
+              {site.name || site.brand}
+              <small>15 лет опыта в сфере сертификации</small>
+            </span>
+          </a>
+          <p>
+            Сначала разберёмся, что действительно
+            <br />
+            нужно вашему товару.
+          </p>
+          <a href={url('/contacts/')}>Обсудить задачу ↗</a>
+        </div>
+        <p class="legal-note">
+          Консультации и экспертное сопровождение. Эксперт не является аккредитованным органом по
+          сертификации или испытательной лабораторией, не выдает сертификаты соответствия и не
+          проводит лабораторные испытания.
+        </p>
+        <div class="footer-bottom">
+          <span>
+            © {new Date().getFullYear()} {site.name || site.brand}
+          </span>
+          <a href={url('/privacy-policy/')}>Политика обработки персональных данных</a>
+          <a href={url('/personal-data-consent/')}>Согласие на обработку данных</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

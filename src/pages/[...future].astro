@@ -1,0 +1,63 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site, url } from '../data/site';
+import { articles } from '../data/articles';
+export function getStaticPaths() {
+  return [
+    ...(site.features.blog ? [{ params: { future: 'blog' }, props: { kind: 'blog' } }] : []),
+    ...(site.features.marking
+      ? [{ params: { future: 'chestny-znak' }, props: { kind: 'marking' } }]
+      : []),
+  ];
+}
+const { kind } = Astro.props;
+const blog = kind === 'blog';
+const title = blog ? 'База знаний' : 'Проверка необходимости обязательной маркировки';
+---
+
+<Layout
+  title={`${title} | Татьяна Мосс`}
+  description={
+    blog
+      ? 'Материалы о требованиях к продукции, документах и подготовке к процедурам.'
+      : 'Предварительная проверка необходимости обязательной маркировки товара по исходным данным.'
+  }
+  crumbs={[{ name: title, path: blog ? '/blog/' : '/chestny-znak/' }]}
+>
+  <section class="page-hero">
+    <p class="eyebrow">{blog ? 'Полезные материалы' : 'Честный знак'}</p>
+    <h1>{title}</h1>
+  </section>
+  {blog ? (
+    <div class="prose">
+      {articles
+        .filter((a) => !a.draft && a.sections.length)
+        .map((a) => (
+          <section>
+            <h2>
+              <a href={url(`/blog/${a.slug}/`)}>{a.title}</a>
+            </h2>
+            <p>{a.description}</p>
+          </section>
+        ))}
+    </div>
+  ) : (
+    <div class="prose">
+      <p>
+        Необходимость обязательной маркировки проверяется отдельно от формы подтверждения
+        соответствия. Для предварительного анализа нужны назначение, состав, характеристики и код
+        товара, если он известен.
+      </p>
+      <h2>Начните с проверки товара</h2>
+      <p>
+        Предварительная проверка обязательной маркировки входит в анализ товара до закупки за 1 500
+        ₽.
+      </p>
+      <div class="actions">
+        <a class="button" href={url('/proverka-tovara/')}>
+          Подробнее о проверке ↗
+        </a>
+      </div>
+    </div>
+  )}
+</Layout>

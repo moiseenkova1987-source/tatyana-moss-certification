@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Form from '../components/Form.astro';
+import { site } from '../data/site';
+const telegramLabel = site.telegram.split('/').filter(Boolean).pop();
+---
+
+<Layout
+  title="Контакты Татьяны Мосс — консультация по сертификации"
+  description="Обсудите требования к вашему товару с Татьяной Мосс. E-mail, Telegram и заявка на проверку товара до закупки или экспертное сопровождение."
+  crumbs={[{ name: 'Контакты', path: '/contacts/' }]}
+>
+  <section class="page-hero">
+    <p class="eyebrow">На связи</p>
+    <h1>
+      Давайте разберём
+      <br />
+      вашу задачу
+    </h1>
+    <p class="lead">
+      Татьяна Мосс, эксперт по сертификации продукции. Пришлите описание товара и расскажите, на
+      каком этапе вам нужна помощь.
+    </p>
+    <div class="contact-options">
+      {site.email && <a href={`mailto:${site.email}`}>{site.email}</a>}
+      {site.telegram && (
+        <a href={site.telegram} target="_blank" rel="noopener noreferrer">
+          Telegram @{telegramLabel} ↗
+        </a>
+      )}
+      {site.phone && <a href={`tel:${site.phone}`}>{site.phone}</a>}
+    </div>
+  </section>
+  <Form />
+</Layout>

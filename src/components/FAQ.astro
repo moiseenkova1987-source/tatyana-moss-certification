@@ -1,0 +1,25 @@
+---
+import type { FAQ } from '../data/services';
+const { items } = Astro.props as { items: FAQ[] };
+---
+
+<section class="section faq">
+  <div>
+    <p class="eyebrow">Вопросы и ответы</p>
+    <h2>
+      Разберёмся
+      <br />в деталях
+    </h2>
+  </div>
+  <div>
+    {items.map((item) => (
+      <details>
+        <summary>
+          {item.q}
+          <span aria-hidden="true">+</span>
+        </summary>
+        <p>{item.a}</p>
+      </details>
+    ))}
+  </div>
+</section>

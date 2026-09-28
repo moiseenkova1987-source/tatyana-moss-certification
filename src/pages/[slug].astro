@@ -1,0 +1,106 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FAQ from '../components/FAQ.astro';
+import Cards from '../components/Cards.astro';
+import Form from '../components/Form.astro';
+import { services, credit } from '../data/services';
+import { url } from '../data/site';
+export function getStaticPaths() {
+  return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
+}
+const { service: s } = Astro.props;
+const isCheck = s.slug === 'proverka-tovara';
+---
+
+<Layout
+  title={`${s.title} — ${isCheck ? '1 500 ₽' : 'экспертное сопровождение'} | Татьяна Мосс`}
+  description={s.description}
+  crumbs={[
+    { name: 'Услуги', path: '/services/' },
+    { name: s.title, path: `/${s.slug}/` },
+  ]}
+  faq={s.faq}
+  service={s.h1}
+>
+  <section class="page-hero">
+    <p class="eyebrow">{s.label}</p>
+    <h1>{s.h1}</h1>
+    <p class="lead">{s.intro}</p>
+    <div class="actions">
+      <a class="button" href="#request">
+        {isCheck ? 'Заказать проверку за 1 500 ₽' : 'Обсудить задачу'}{' '}
+        <span aria-hidden="true">↗</span>
+      </a>
+      {!isCheck && (
+        <a class="text-link" href={url('/proverka-tovara/')}>
+          Не знаете требования? Начните с проверки
+        </a>
+      )}
+    </div>
+  </section>
+  {s.slug === 'import-iz-kitaya' && (
+    <div class="route-chain">
+      Товар <span>→</span> ТН ВЭД <span>→</span> Разрешительные документы <span>→</span> Маркировка{' '}
+      <span>→</span> Образцы <span>→</span> Официальный импорт <span>→</span> Продажа
+    </div>
+  )}
+  <div class="service-grid">
+    <div class="service-body">
+      <section>
+        <h2>{s.question}</h2>
+        <p>{s.answer}</p>
+      </section>
+      <section>
+        <h2>{isCheck ? 'Что входит в проверку' : 'Чем могу помочь'}</h2>
+        <ul class="check-list">
+          {s.includes.map((i) => (
+            <li>{i}</li>
+          ))}
+        </ul>
+      </section>
+      <section>
+        <h2>Что вы получаете</h2>
+        <p>{s.result}</p>
+      </section>
+      <section>
+        <h2>Что подготовить для начала</h2>
+        <ul class="check-list">
+          {s.prepare.map((i) => (
+            <li>{i}</li>
+          ))}
+        </ul>
+        <p>
+          Если части сведений пока нет, начнем с того, что есть. Я подскажу, какие данные нужно
+          запросить у поставщика.
+        </p>
+      </section>
+    </div>
+    <aside class="side-box">
+      <p class="eyebrow">Первый шаг без догадок</p>
+      <h2>
+        Проверка товара
+        <br />
+        до закупки
+      </h2>
+      <p class="price">
+        1 500 ₽<small>предварительный анализ и маршрут</small>
+      </p>
+      <p class="credit">{credit}</p>
+      <a class="button" href={isCheck ? '#request' : url('/proverka-tovara/')}>
+        {isCheck ? 'Оставить заявку' : 'Подробнее о проверке'} ↗
+      </a>
+      <p class="inline-note">
+        Стоимость испытаний, работ участников процедуры и дальнейшего сопровождения согласуется
+        отдельно.
+      </p>
+    </aside>
+  </div>
+  <FAQ items={s.faq} />
+  <section class="section" style="padding-top:0">
+    <div class="section-heading">
+      <h2>Может быть полезно</h2>
+    </div>
+    <Cards items={s.related.map((slug) => services.find((item) => item.slug === slug)!)} />
+  </section>
+  <Form />
+</Layout>

@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { url } from '../data/site';
+---
+
+<Layout
+  title="Страница не найдена — Татьяна Мосс"
+  description="Такой страницы нет. Перейдите к услугам эксперта по сертификации или начните с проверки товара до закупки."
+  noindex
+>
+  <section class="page-hero">
+    <p class="eyebrow">Ошибка 404</p>
+    <h1>Такой страницы нет</h1>
+    <p class="lead">Возможно, адрес изменился. Нужную услугу можно найти в каталоге.</p>
+    <div class="actions">
+      <a class="button" href={url('/services/')}>
+        Посмотреть услуги ↗
+      </a>
+      <a class="text-link" href={url('/')}>
+        На главную
+      </a>
+    </div>
+  </section>
+</Layout>

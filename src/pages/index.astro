@@ -1,0 +1,207 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Cards from '../components/Cards.astro';
+import FAQ from '../components/FAQ.astro';
+import Form from '../components/Form.astro';
+import { services, checkIncludes, credit, homeFAQ } from '../data/services';
+import { site, url } from '../data/site';
+---
+
+<Layout
+  title="Эксперт по сертификации продукции — 15 лет опыта"
+  description="Экспертное сопровождение сертификации продукции. Проверка товара до закупки за 1 500 ₽: требования, документы, маркировка и дальнейший маршрут действий."
+  faq={homeFAQ}
+>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Личный эксперт для вашего бизнеса</p>
+      <h1>
+        Экспертное <br />
+        сопровождение <br />
+        <em>сертификации</em> <br />
+        продукции
+      </h1>
+      <p class="lead">
+        15 лет опыта. Помогаю предпринимателям разобраться в требованиях к товару до закупки и
+        сопровождаю процесс получения необходимых документов.
+      </p>
+      <p class="tags">
+        ТН ВЭД • технические регламенты • разрешительные документы • маркировка • импорт
+      </p>
+      <div class="actions">
+        <a class="button" href={url('/proverka-tovara/')}>
+          Проверить товар до закупки <span aria-hidden="true">↗</span>
+        </a>
+        <a class="button secondary" href={`${url('/contacts/')}#request`}>
+          Рассчитать сопровождение
+        </a>
+      </div>
+    </div>
+    <div class:list={['expert-panel', { photo: !!site.photo }]}>
+      {site.photo ? (
+        <>
+          <img
+            src={url(site.photo)}
+            alt={site.photoAlt}
+            width="640"
+            height="800"
+            fetchpriority="high"
+          />
+          <div class="photo-label">
+            {site.name || 'Эксперт по сертификации продукции'} · 15 лет опыта
+          </div>
+        </>
+      ) : (
+        <>
+          <div class="topline">
+            <span>ПРАКТИКА И ЭКСПЕРТИЗА</span>
+            <span>01 /</span>
+          </div>
+          <div>
+            <div class="number">15</div>
+            <p class="experience">
+              лет в сфере
+              <br />
+              сертификации продукции
+            </p>
+          </div>
+          <p class="bottomline">
+            Лично вникаю в ваш товар.
+            <br />
+            Объясняю требования понятным языком.
+          </p>
+        </>
+      )}
+    </div>
+  </section>
+  <div class="principle">
+    <strong>
+      Сначала разберёмся, что действительно нужно вашему товару — потом оформляем документы.
+    </strong>
+    <span>От первого вопроса до понятного решения</span>
+  </div>
+  <section class="section start">
+    <div>
+      <p class="eyebrow">Первый шаг</p>
+      <h2>С чего начать?</h2>
+    </div>
+    <div>
+      <p>
+        Не знаете, нужен сертификат, декларация или другой документ? Вам не нужно самостоятельно
+        изучать регламенты. Начните с проверки товара.
+      </p>
+      <a class="text-link" href={url('/proverka-tovara/')}>
+        Разобраться до закупки ↗
+      </a>
+    </div>
+  </section>
+  <section class="offer">
+    <div>
+      <p class="eyebrow">Меньше неизвестности до закупки</p>
+      <h2>
+        Проверка товара
+        <br />
+        до закупки
+      </h2>
+      <p class="price">
+        1 500 ₽<small>за предварительный разбор вашего товара</small>
+      </p>
+      <div class="actions">
+        <a class="button light" href={url('/proverka-tovara/')}>
+          Что входит в проверку <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+      <p class="credit">{credit}</p>
+    </div>
+    <ul class="offer-list">
+      {checkIncludes.map((i) => (
+        <li>{i}</li>
+      ))}
+    </ul>
+  </section>
+  <section class="section">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">От анализа к действиям</p>
+        <h2>Чем могу помочь</h2>
+      </div>
+      <a class="text-link" href={url('/services/')}>
+        Все услуги ↗
+      </a>
+    </div>
+    <Cards items={services.slice(1)} />
+  </section>
+  <section class="section" style="padding-top:0">
+    <p class="eyebrow">Прозрачный процесс</p>
+    <h2>Как проходит работа</h2>
+    <div class="steps">
+      {[
+        ['Вы присылаете информацию', 'Описание, ссылка на товар и ваша задача.'],
+        ['Я анализирую требования', 'Определяю, что применимо к вашей продукции.'],
+        ['Вы получаете маршрут', 'Объясняю документы, этапы и следующие шаги.'],
+        ['Сопровождаю процедуру', 'При необходимости помогаю с дальнейшей работой.'],
+      ].map(([title, text], i) => (
+        <div class="step">
+          <span>0{i + 1}</span>
+          <h3>{title}</h3>
+          <p>{text}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+  <section class="trust">
+    <div>
+      <p class="eyebrow">Почему ко мне обращаются</p>
+      <h2>
+        15 лет опыта.
+        <br />
+        Внимание к вашему
+        <br />
+        конкретному товару.
+      </h2>
+      <p>
+        Без универсальных решений для всех.
+        <br />
+        Сначала — факты, требования и ваша задача.
+      </p>
+    </div>
+    <div class="trust-points">
+      <div>
+        <h3>Личный подход</h3>
+        <p>Вы обсуждаете свой вопрос с экспертом, который вникает в исходную информацию.</p>
+      </div>
+      <div>
+        <h3>Понятные объяснения</h3>
+        <p>Перевожу требования в последовательность действий: что, зачем и на каком этапе нужно.</p>
+      </div>
+      <div>
+        <h3>Ясные границы ответственности</h3>
+        <p>
+          Консультирую и сопровождаю. Работы по оценке соответствия выполняют соответствующие
+          участники процедуры.
+        </p>
+      </div>
+    </div>
+  </section>
+  <section class="section about-strip">
+    <div>
+      <p class="eyebrow">Обо мне</p>
+      <h2>
+        На вашей стороне
+        <br />в сложных вопросах
+      </h2>
+    </div>
+    <div>
+      <p>
+        Я — эксперт по сертификации продукции с 15-летним профессиональным опытом. Помогаю
+        предпринимателям разобраться, какие требования относятся к их товару, и подготовиться к
+        дальнейшей процедуре.
+      </p>
+      <a class="text-link" href={url('/about/')}>
+        Подробнее об эксперте ↗
+      </a>
+    </div>
+  </section>
+  <FAQ items={homeFAQ} />
+  <Form />
+</Layout>

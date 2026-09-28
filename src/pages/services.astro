@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Cards from '../components/Cards.astro';
+import { services } from '../data/services';
+import { url } from '../data/site';
+---
+
+<Layout
+  title="Услуги Татьяны Мосс — сопровождение сертификации"
+  description="Проверка товара, сопровождение декларации и сертификации, отказное письмо, ввоз образцов и документы для маркетплейсов. Личный эксперт с 15-летним опытом."
+  crumbs={[{ name: 'Услуги', path: '/services/' }]}
+>
+  <section class="page-hero">
+    <p class="eyebrow">Экспертная помощь на нужном этапе</p>
+    <h1>Услуги</h1>
+    <p class="lead">
+      От первого вопроса о товаре до сопровождения процедуры. Выберите свою задачу — или начните с
+      предварительной проверки.
+    </p>
+  </section>
+  <section style="padding-bottom:70px">
+    <Cards items={services} calculate />
+  </section>
+  <section class="empty-state">
+    <h2>Пока не знаете, что выбрать?</h2>
+    <p class="lead">
+      Проверка товара до закупки поможет определить необходимые документы и порядок действий.
+    </p>
+    <div class="actions">
+      <a class="button" href={url('/proverka-tovara/')}>
+        Начать с проверки за 1 500 ₽ ↗
+      </a>
+    </div>
+  </section>
+</Layout>
