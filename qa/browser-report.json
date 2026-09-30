@@ -313,6 +313,68 @@
       "overflow": false
     }
   ],
+  "zoomResults": [
+    {
+      "width": 390,
+      "route": "/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/services/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/about/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/contacts/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/proverka-tovara/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/services/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/about/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/contacts/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/proverka-tovara/",
+      "textScale": "200%",
+      "overflow": false
+    }
+  ],
   "form": {
     "defaultDisabled": true,
     "consentRequired": true,

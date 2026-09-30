@@ -22,6 +22,8 @@ const routes = [
 ];
 const results = [],
   errors = [];
+const visualRoutes = ['/', '/services/', '/about/', '/contacts/', '/proverka-tovara/'];
+const zoomResults = [];
 await mkdir('qa/screenshots', { recursive: true });
 for (const width of [360, 390, 768, 1440]) {
   const page = await browser.newPage({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
@@ -32,6 +34,11 @@ for (const width of [360, 390, 768, 1440]) {
     if (response.status() !== 200 || overflow)
       errors.push(`${width} ${route}: HTTP ${response.status()}, overflow=${overflow}`);
     results.push({ width, route, status: response.status(), overflow });
+    if ([390, 1440].includes(width) && visualRoutes.includes(route)) {
+      const name = route === '/' ? 'home' : route.split('/')[1];
+      await page.screenshot({ path: `qa/screenshots/final-${name}-${width}.png`, fullPage: true });
+      await page.screenshot({ path: `qa/screenshots/final-${name}-${width}-viewport.png` });
+    }
   }
   await page.goto(origin + '/');
   await page.screenshot({ path: `qa/screenshots/home-${width}.png`, fullPage: true });
@@ -39,10 +46,28 @@ for (const width of [360, 390, 768, 1440]) {
   await page.close();
 }
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+for (const width of [390, 1440]) {
+  await page.setViewportSize({width, height:900});
+  for (const route of visualRoutes) {
+    await page.goto(origin + route);
+    await page.evaluate(() => (document.documentElement.style.fontSize = '200%'));
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
+    zoomResults.push({width,route,textScale:'200%',overflow});
+    if (overflow) {
+      errors.push(`200% text overflow: ${width} ${route}`);
+      console.log(await page.evaluate(() => [...document.querySelectorAll('body *')].filter(el => el.getBoundingClientRect().right > innerWidth + 1).map(el=>({tag:el.tagName,class:el.className,width:el.getBoundingClientRect().width,text:el.textContent.slice(0,55)})).slice(0,8)));
+    }
+    const name = route === '/' ? 'home' : route.split('/')[1];
+    await page.screenshot({path:`qa/screenshots/zoom-${name}-${width}.png`,fullPage:true});
+  }
+}
+await page.setViewportSize({width:390,height:844});
 await page.goto(origin + '/');
-await page.evaluate(() => (document.documentElement.style.fontSize = '200%'));
-if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth))
-  errors.push('200% text enlargement causes page overflow');
+await page.locator('.mobile-menu summary').click();
+if (!await page.locator('.mobile-menu').evaluate(el=>el.open)) errors.push('Mobile menu failed to open');
+await page.screenshot({path:'qa/screenshots/mobile-menu.png'});
+await page.keyboard.press('Escape');
+if (await page.locator('.mobile-menu').evaluate(el=>el.open)) errors.push('Escape did not close mobile menu');
 await page.goto(origin + '/contacts/');
 if (!(await page.locator('button[type=submit]').isDisabled()))
   errors.push('Default form is not disabled');
@@ -117,6 +142,7 @@ await writeFile(
   JSON.stringify(
     {
       results,
+      zoomResults,
       form: { defaultDisabled: true, consentRequired: true, successAndErrorMocked: true },
       errors,
     },

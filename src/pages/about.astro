@@ -8,17 +8,12 @@ import { site, url } from '../data/site';
   description="Татьяна Мосс: эксперт по сертификации продукции. 15 лет профессионального опыта, личный анализ требований и сопровождение процедур подтверждения соответствия."
   crumbs={[{ name: 'Обо мне', path: '/about/' }]}
 >
-  <section class="hero">
+  <section class="about-hero page-hero">
     <div>
       <p class="eyebrow">Обо мне</p>
       <h1>
         Татьяна Мосс.
-        <br />
-        <em>Эксперт</em>
-        <br />
-        по сертификации
-        <br />
-        продукции.
+        <br /> Эксперт по сертификации продукции.
       </h1>
       <p class="lead">
         15 лет профессионального опыта в сфере сертификации продукции. Помогаю предпринимателям
@@ -30,31 +25,16 @@ import { site, url } from '../data/site';
         </a>
       </div>
     </div>
-    <div class:list={['expert-panel', { photo: !!site.photo }]}>
-      {site.photo ? (
-        <img
-          src={url(site.photo)}
-          alt={site.photoAlt}
-          width="640"
-          height="800"
-          loading="lazy"
-          decoding="async"
-        />
-      ) : (
-        <>
-          <div class="topline">ЛИЧНЫЙ ЭКСПЕРТ</div>
-          <div>
-            <div class="number">15</div>
-            <p class="experience">лет профессионального опыта</p>
-          </div>
-          <p class="bottomline">
-            Татьяна Мосс
-            <br />
-            Экспертное сопровождение и консультации
-          </p>
-        </>
-      )}
-    </div>
+    <figure class="about-photo">
+      <img
+        src={url(site.photo)}
+        alt={site.photoAlt}
+        width="1536"
+        height="1024"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
   </section>
   <div class="prose">
     <h2>Сначала понять задачу</h2>

@@ -1,0 +1,23 @@
+---
+// Static Lucide icons. License: public/images/lucide-license.txt. No client library.
+import icons from '../data/icons.json';
+type Name = keyof typeof icons;
+const { name, class: className = '' } = Astro.props as { name: Name; class?: string };
+---
+
+<svg
+  class:list={['icon', className]}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.35"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {icons[name].map(([tag, attributes]) => {
+    const Element = tag as 'path';
+    return <Element {...(attributes as Record<string, string>)} />;
+  })}
+</svg>

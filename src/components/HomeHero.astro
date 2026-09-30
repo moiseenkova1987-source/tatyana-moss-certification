@@ -1,0 +1,80 @@
+---
+import { site, url } from '../data/site';
+import Button from './Button.astro';
+import TrustItem from './TrustItem.astro';
+import Icon from './Icon.astro';
+const links = [
+  {
+    title: 'Проверка товара до закупки',
+    text: 'Узнайте, какие документы нужны и какие риски есть',
+    path: '/proverka-tovara/',
+    icon: 'Search',
+  },
+  {
+    title: 'Декларации и сертификаты',
+    text: 'Подберу оптимальную схему оформления',
+    path: '/sertifikaciya-produkcii/',
+    icon: 'FileText',
+  },
+  {
+    title: 'Импорт из Китая',
+    text: 'Документы, образцы, маркировка. Консультации по ВЭД — с профильным специалистом',
+    path: '/import-iz-kitaya/',
+    icon: 'Package',
+  },
+  {
+    title: 'Отказные письма',
+    text: 'Подготовка для товаров, не подлежащих обязательной сертификации',
+    path: '/otkaznoe-pismo/',
+    icon: 'MessageSquareMore',
+  },
+] as const;
+---
+
+<section class="home-hero" aria-labelledby="hero-title">
+  <div class="hero-portrait">
+    <img
+      src={url(site.photo)}
+      alt={site.photoAlt}
+      width="1536"
+      height="1024"
+      fetchpriority="high"
+      decoding="async"
+    />
+  </div>
+  <div class="hero-wash" aria-hidden="true"></div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Анализирую. Определяю. Сопровождаю.</p>
+      <h1 id="hero-title">
+        Сертификация
+        <br /> и документы
+        <br /> для <em>вашего товара</em>
+      </h1>
+      <p class="lead">
+        Помогаю импортёрам, производителям и продавцам маркетплейсов безопасно выводить товары на
+        российский рынок — от проверки требований до получения необходимых документов.
+      </p>
+      <div class="actions">
+        <Button href={url('/proverka-tovara/')}>Получить консультацию от 1 500 ₽</Button>
+      </div>
+      <div class="hero-trust">
+        <TrustItem icon="Award" text="15+ лет опыта" />
+        <TrustItem icon="UsersRound" text="Помогаю по всей России и СНГ" />
+        <TrustItem icon="ShieldCheck" text="Чёткие рекомендации без сложных формулировок" />
+      </div>
+    </div>
+    <div class="hero-services" aria-label="Основные услуги">
+      {links.map((item) => (
+        <a class="hero-service" href={url(item.path)}>
+          <Icon name={item.icon} />
+          <span>
+            <span class="hero-service-title">{item.title}</span>
+            <span class="hero-service-text">{item.text}</span>
+          </span>
+          <Icon name="ArrowRight" class="service-arrow" />
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

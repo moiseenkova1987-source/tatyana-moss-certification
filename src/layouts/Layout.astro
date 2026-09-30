@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
-import { site, url, navigation, live } from '../data/site';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site, url, live } from '../data/site';
 import type { FAQ } from '../data/services';
 const {
   title,
@@ -9,6 +11,7 @@ const {
   faq = [],
   service,
   noindex = false,
+  homePage = false,
 } = Astro.props as {
   title: string;
   description: string;
@@ -16,6 +19,7 @@ const {
   faq?: FAQ[];
   service?: string;
   noindex?: boolean;
+  homePage?: boolean;
 };
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const home = new URL(url('/'), Astro.site).href;
@@ -88,7 +92,7 @@ const ad = site.accreditation;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f8f9fc" />
+    <meta name="theme-color" content="#f8f4ef" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="robots" content={!live || noindex ? 'noindex, nofollow' : 'index, follow'} />
@@ -117,37 +121,12 @@ const ad = site.accreditation;
       )}
     />
   </head>
-  <body>
+  <body class:list={{ 'home-page': homePage }}>
     <a class="skip-link" href="#main">
       К содержанию
     </a>
-    <header class="header">
-      <div class="container header-inner">
-        <a class="brand" href={url('/')} aria-label="Эксперт по сертификации — главная">
-          <span class="brand-mark" aria-hidden="true">
-            э.
-          </span>
-          <span>
-            {site.name || 'Эксперт по сертификации'}
-            <small>Продукция. Требования. Решения.</small>
-          </span>
-        </a>
-        <nav aria-label="Основное меню">
-          {navigation.map(([label, href]) => (
-            <a
-              href={url(href)}
-              aria-current={Astro.url.pathname === url(href) ? 'page' : undefined}
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-        <a class="header-cta" href={`${url('/contacts/')}#request`}>
-          Обсудить задачу <span aria-hidden="true">↗</span>
-        </a>
-      </div>
-    </header>
-    <main id="main" class="container">
+    <Header />
+    <main id="main" class:list={{ container: !homePage }}>
       {crumbs.length > 0 && (
         <nav class="breadcrumbs" aria-label="Хлебные крошки">
           <a href={url('/')}>Главная</a>
@@ -179,38 +158,6 @@ const ad = site.accreditation;
         </p>
       </aside>
     )}
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-top">
-          <a class="brand" href={url('/')}>
-            <span class="brand-mark" aria-hidden="true">
-              э.
-            </span>
-            <span>
-              {site.name || site.brand}
-              <small>15 лет опыта в сфере сертификации</small>
-            </span>
-          </a>
-          <p>
-            Сначала разберёмся, что действительно
-            <br />
-            нужно вашему товару.
-          </p>
-          <a href={url('/contacts/')}>Обсудить задачу ↗</a>
-        </div>
-        <p class="legal-note">
-          Консультации и экспертное сопровождение. Эксперт не является аккредитованным органом по
-          сертификации или испытательной лабораторией, не выдает сертификаты соответствия и не
-          проводит лабораторные испытания.
-        </p>
-        <div class="footer-bottom">
-          <span>
-            © {new Date().getFullYear()} {site.name || site.brand}
-          </span>
-          <a href={url('/privacy-policy/')}>Политика обработки персональных данных</a>
-          <a href={url('/personal-data-consent/')}>Согласие на обработку данных</a>
-        </div>
-      </div>
-    </footer>
+    <Footer />
   </body>
 </html>

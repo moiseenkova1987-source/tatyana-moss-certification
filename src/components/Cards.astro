@@ -1,28 +1,11 @@
 ---
-import { url } from '../data/site';
 import type { Service } from '../data/services';
+import ServiceCard from './ServiceCard.astro';
 const { items, calculate = false } = Astro.props as { items: Service[]; calculate?: boolean };
 ---
 
 <div class="cards">
-  {items.map((s, i) => (
-    <article class="card">
-      <span class="card-number">{String(i + 1).padStart(2, '0')} /</span>
-      <h3>{s.title}</h3>
-      <p>{s.short}</p>
-      <div class="card-links">
-        <a href={url(`/${s.slug}/`)} aria-label={`Подробнее: ${s.title}`}>
-          Подробнее <span aria-hidden="true">↗</span>
-        </a>
-        {calculate && (
-          <a
-            class="muted-link"
-            href={`${url('/contacts/')}?service=${encodeURIComponent(s.title)}#request`}
-          >
-            Рассчитать
-          </a>
-        )}
-      </div>
-    </article>
+  {items.map((service, index) => (
+    <ServiceCard service={service} index={index} calculate={calculate} />
   ))}
 </div>

@@ -1,0 +1,54 @@
+---
+import { url, navigation } from '../data/site';
+import Brand from './Brand.astro';
+import Button from './Button.astro';
+const current = Astro.url.pathname;
+---
+
+<header class="header">
+  <div class="container header-inner">
+    <Brand />
+    <nav class="desktop-nav" aria-label="Основное меню">
+      {navigation.map(([label, href]) => (
+        <a href={url(href)} aria-current={current === url(href) ? 'page' : undefined}>
+          {label}
+        </a>
+      ))}
+    </nav>
+    <Button href={`${url('/contacts/')}#request`} class="header-cta">
+      Оставить заявку
+    </Button>
+    <details class="mobile-menu">
+      <summary aria-label="Открыть или закрыть меню">
+        <span class="menu-bars" aria-hidden="true"></span>
+        <span>Меню</span>
+      </summary>
+      <nav aria-label="Мобильное меню">
+        {navigation.map(([label, href]) => (
+          <a href={url(href)} aria-current={current === url(href) ? 'page' : undefined}>
+            {label}
+          </a>
+        ))}
+        <Button href={`${url('/contacts/')}#request`}>Оставить заявку</Button>
+      </nav>
+    </details>
+  </div>
+</header>
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
+  menu?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      menu.open = false;
+      menu.querySelector('summary')?.focus();
+    }
+  });
+  menu?.querySelectorAll('a').forEach((link) =>
+    link.addEventListener('click', () => {
+      menu.open = false;
+    }),
+  );
+  document.addEventListener('click', (event) => {
+    if (menu?.open && event.target instanceof Node && !menu.contains(event.target))
+      menu.open = false;
+  });
+</script>

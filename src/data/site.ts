@@ -4,7 +4,7 @@ export const site = {
   email: 'tatyana.moiseenk@mail.ru',
   telegram: 'https://t.me/tatimoss',
   phone: '',
-  photo: '', // /images/expert.webp — реальная фотография, не стоковый портрет
+  photo: '/images/tatyana-moss.webp', // Фотография пользователя; только конвертация в WebP
   photoAlt: 'Татьяна Мосс — эксперт по сертификации продукции',
   experience: 15,
   legal: {

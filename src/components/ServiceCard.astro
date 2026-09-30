@@ -1,0 +1,29 @@
+---
+import { url } from '../data/site';
+import type { Service } from '../data/services';
+import Icon from './Icon.astro';
+const {
+  service: s,
+  index = 0,
+  calculate = false,
+} = Astro.props as { service: Service; index?: number; calculate?: boolean };
+---
+
+<article class="card">
+  <span class="card-number">{String(index + 1).padStart(2, '0')} /</span>
+  <h3>{s.title}</h3>
+  <p>{s.short}</p>
+  <div class="card-links">
+    <a href={url(`/${s.slug}/`)} aria-label={`Подробнее: ${s.title}`}>
+      Подробнее <Icon name="ArrowRight" />
+    </a>
+    {calculate && (
+      <a
+        class="muted-link"
+        href={`${url('/contacts/')}?service=${encodeURIComponent(s.title)}#request`}
+      >
+        Рассчитать
+      </a>
+    )}
+  </div>
+</article>

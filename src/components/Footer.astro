@@ -1,0 +1,32 @@
+---
+import { site, url } from '../data/site';
+import Brand from './Brand.astro';
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <Brand />
+      <p>
+        Сначала разберёмся, что действительно
+        <br />
+        нужно вашему товару.
+      </p>
+      <a class="text-link" href={url('/contacts/')}>
+        Обсудить задачу →
+      </a>
+    </div>
+    <p class="legal-note">
+      Консультации и экспертное сопровождение. Эксперт не является аккредитованным органом по
+      сертификации или испытательной лабораторией, не выдает сертификаты соответствия и не проводит
+      лабораторные испытания.
+    </p>
+    <div class="footer-bottom">
+      <span>
+        © {new Date().getFullYear()} {site.name || site.brand}
+      </span>
+      <a href={url('/privacy-policy/')}>Политика обработки персональных данных</a>
+      <a href={url('/personal-data-consent/')}>Согласие на обработку данных</a>
+    </div>
+  </div>
+</footer>

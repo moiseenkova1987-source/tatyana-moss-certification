@@ -1,0 +1,48 @@
+---
+import Icon from './Icon.astro';
+import { url } from '../data/site';
+const items = [
+  {
+    title: 'Импортёрам',
+    text: 'Помогаю правильно подготовить документы для ввоза и реализации товара',
+    icon: 'Ship',
+  },
+  {
+    title: 'Производителям',
+    text: 'Подбираю требования и схему подтверждения соответствия продукции',
+    icon: 'Boxes',
+  },
+  {
+    title: 'Продавцам маркетплейсов',
+    text: 'Помогаю выполнить требования Wildberries, Ozon и других площадок',
+    icon: 'ShoppingCart',
+  },
+  {
+    title: 'Предпринимателям',
+    text: 'Консультирую на этапе выбора товара и оценки требований к документам',
+    icon: 'Laptop',
+  },
+] as const;
+---
+
+<section class="audience container">
+  <div class="section-heading">
+    <h2>Кому я помогаю</h2>
+    <a class="text-link" href={url('/services/')}>
+      Все услуги <Icon name="ArrowRight" />
+    </a>
+  </div>
+  <div class="audience-grid">
+    {items.map((item) => (
+      <article class="audience-item">
+        <div class="audience-image">
+          <Icon name={item.icon} />
+        </div>
+        <div>
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>

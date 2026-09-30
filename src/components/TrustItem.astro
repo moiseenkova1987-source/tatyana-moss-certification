@@ -1,0 +1,12 @@
+---
+import Icon from './Icon.astro';
+const { icon, text } = Astro.props as {
+  icon: 'Award' | 'UsersRound' | 'ShieldCheck';
+  text: string;
+};
+---
+
+<div class="trust-item">
+  <Icon name={icon} />
+  <span>{text}</span>
+</div>
