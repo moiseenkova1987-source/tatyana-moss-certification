@@ -31,7 +31,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Production release check
   if: env.PUBLIC_SITE_LIVE == 'true'
-  run: pnpm release:check
+  run: pnpm release:check 
       - run: pnpm check
       - run: pnpm build
       - run: pnpm audit:site
