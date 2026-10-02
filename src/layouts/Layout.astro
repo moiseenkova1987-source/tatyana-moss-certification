@@ -32,6 +32,7 @@ const graph: Record<string, unknown>[] = [
     name: site.brand,
     url: home,
     description: 'Консультации и экспертное сопровождение процедур в сфере сертификации продукции',
+    ...(site.phone ? { telephone: site.phone } : {}),
     ...(site.name ? { founder: { '@id': expertId } } : {}),
   },
   ...(site.name
@@ -43,7 +44,8 @@ const graph: Record<string, unknown>[] = [
           jobTitle: 'Эксперт по сертификации продукции',
           description: '15 лет профессионального опыта в сфере сертификации продукции',
           url: home,
-          ...(site.telegram ? { sameAs: [site.telegram] } : {}),
+          sameAs: [site.telegram, site.max].filter(Boolean),
+          ...(site.phone ? { telephone: site.phone } : {}),
         },
       ]
     : []),

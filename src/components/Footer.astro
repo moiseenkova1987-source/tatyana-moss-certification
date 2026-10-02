@@ -16,6 +16,12 @@ import Brand from './Brand.astro';
         Обсудить задачу →
       </a>
     </div>
+    <div class="contact-options" aria-label="Контакты эксперта">
+      {site.phone && <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>}
+      {site.telegram && <a href={site.telegram}>Telegram</a>}
+      {site.max && <a href={site.max}>MAX</a>}
+      {site.email && <a href={`mailto:${site.email}`}>{site.email}</a>}
+    </div>
     <p class="legal-note">
       Консультации и экспертное сопровождение. Эксперт не является аккредитованным органом по
       сертификации или испытательной лабораторией, не выдает сертификаты соответствия и не проводит

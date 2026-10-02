@@ -31,6 +31,18 @@ const enabled =
             Или свяжитесь в <a href={site.telegram}>Telegram</a>.
           </>
         )}
+        {site.max && (
+          <>
+            {' '}
+            Также можно написать в <a href={site.max}>MAX</a>.
+          </>
+        )}
+        {site.phone && (
+          <>
+            {' '}
+            Телефон: <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>.
+          </>
+        )}
       </p>
     )}
     <p class="inline-note">

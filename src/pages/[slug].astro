@@ -13,7 +13,9 @@ const isCheck = s.slug === 'proverka-tovara';
 ---
 
 <Layout
-  title={`${s.title} — ${isCheck ? '1 500 ₽' : 'экспертное сопровождение'} | Татьяна Мосс`}
+  title={
+    s.seoTitle ?? `${s.title} — ${isCheck ? '1 500 ₽' : 'экспертное сопровождение'} | Татьяна Моисеенкова`
+  }
   description={s.description}
   crumbs={[
     { name: 'Услуги', path: '/services/' },

@@ -6,8 +6,8 @@ const telegramLabel = site.telegram.split('/').filter(Boolean).pop();
 ---
 
 <Layout
-  title="Контакты Татьяны Мосс — консультация по сертификации"
-  description="Обсудите требования к вашему товару с Татьяной Мосс. E-mail, Telegram и заявка на проверку товара до закупки или экспертное сопровождение."
+  title="Контакты Татьяны Моисеенковой — консультация по сертификации"
+  description="Обсудите требования к вашему товару с Татьяной Моисеенковой. E-mail, Telegram и заявка на проверку товара до закупки или экспертное сопровождение."
   crumbs={[{ name: 'Контакты', path: '/contacts/' }]}
 >
   <section class="page-hero">
@@ -18,17 +18,22 @@ const telegramLabel = site.telegram.split('/').filter(Boolean).pop();
       вашу задачу
     </h1>
     <p class="lead">
-      Татьяна Мосс, эксперт по сертификации продукции. Пришлите описание товара и расскажите, на
+      Татьяна Моисеенкова, эксперт по сертификации продукции. Пришлите описание товара и расскажите, на
       каком этапе вам нужна помощь.
     </p>
     <div class="contact-options">
-      {site.email && <a href={`mailto:${site.email}`}>{site.email}</a>}
+      {site.phone && <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>}
       {site.telegram && (
         <a href={site.telegram} target="_blank" rel="noopener noreferrer">
           Telegram @{telegramLabel} ↗
         </a>
       )}
-      {site.phone && <a href={`tel:${site.phone}`}>{site.phone}</a>}
+      {site.max && (
+        <a href={site.max} target="_blank" rel="noopener noreferrer">
+          MAX ↗
+        </a>
+      )}
+      {site.email && <a href={`mailto:${site.email}`}>{site.email}</a>}
     </div>
   </section>
   <Form />

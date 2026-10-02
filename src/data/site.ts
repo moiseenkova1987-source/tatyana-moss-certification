@@ -1,11 +1,13 @@
 export const site = {
   brand: 'Эксперт по сертификации',
-  name: 'Татьяна Мосс',
+  name: 'Татьяна Моисеенкова',
   email: 'tatyana.moiseenk@mail.ru',
   telegram: 'https://t.me/tatimoss',
-  phone: '',
+  phone: '+79185521213',
+  phoneDisplay: '+7 (918) 552-12-13',
+  max: 'https://max.ru/u/f9LHodD0cOJrNl6avAh4zYB-zAGCOj_V69tBsxc_OzpZVAxGaD9QL6UBscY',
   photo: '/images/tatyana-moss.webp', // Фотография пользователя; только конвертация в WebP
-  photoAlt: 'Татьяна Мосс — эксперт по сертификации продукции',
+  photoAlt: 'Татьяна Моисеенкова — эксперт по сертификации продукции',
   experience: 15,
   legal: {
     ready: false, // После заполнения реквизитов и согласования правовых текстов

@@ -7,7 +7,7 @@ if (!origin || !origin.startsWith('https://') || new URL(origin).hostname === 'e
   failures.push('Задайте реальный PUBLIC_SITE_URL с HTTPS.');
 if (process.env.PUBLIC_SITE_LIVE !== 'true')
   failures.push('Для публичной индексируемой версии установите PUBLIC_SITE_LIVE=true.');
-if (!source.includes("name: 'Татьяна Мосс'")) console.log('Проверьте имя эксперта в site.ts.');
+if (!source.includes("name: 'Татьяна Моисеенкова'")) console.log('Проверьте имя эксперта в site.ts.');
 if (process.env.PUBLIC_FORM_ENDPOINT && !/ready:\s*true/.test(source))
   failures.push('Для включения endpoint завершите правовые настройки legal.ready.');
 if (process.env.PUBLIC_FORM_ENDPOINT && !process.env.PUBLIC_FORM_ENDPOINT.startsWith('https://'))
