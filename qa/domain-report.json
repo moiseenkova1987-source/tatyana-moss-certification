@@ -1,0 +1,14 @@
+{
+  "origin": "https://tm-cert.ru",
+  "base": "/",
+  "PUBLIC_SITE_LIVE": false,
+  "htmlPages": 14,
+  "sitemapUrls": 13,
+  "assets": [
+    "/favicon.svg",
+    "/_astro/Layout.Dotml4K9.css",
+    "/images/tatyana-moss.webp"
+  ],
+  "robots": "User-agent: *\nDisallow: /\n\nSitemap: https://tm-cert.ru/sitemap.xml\n",
+  "errors": []
+}

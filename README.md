@@ -4,7 +4,7 @@
 
 ## Текущее состояние
 
-Готовы 11 основных страниц, политика, отдельное согласие, 404, sitemap и robots. Имя, e-mail и Telegram заполнены реальными данными. Предоставленная фотография размещена на главной и странице «Обо мне». Домен не задан; тестовая сборка закрыта от индексации. Онлайн-отправка отключена. Прямые контакты работают.
+Готовы 11 основных страниц, политика, отдельное согласие, 404, sitemap и robots. Имя, e-mail и Telegram заполнены реальными данными. Предоставленная фотография размещена на главной и странице «Обо мне». Локально подготовлен переход на tm-cert.ru; настройка custom domain и DNS выполняется отдельно. Тестовая сборка закрыта от индексации. Онлайн-отправка отключена. Прямые контакты работают.
 
 Правовые тексты подготовлены как основа: перед сбором данных нужны фактические реквизиты оператора, условия хранения и сведения об обработчиках. Не включайте `legal.ready`, пока тексты не отражают реальный процесс.
 
@@ -96,26 +96,25 @@ scripts/release-check.mjs   проверка конфигурации перед
 
 Палитра и интервалы заданы CSS-переменными в начале `src/styles/global.css`. Заголовки используют системный Georgia, основной текст — Segoe UI с резервными шрифтами. Иконки Lucide встроены как SVG; лицензия находится в `public/images/lucide-license.txt`. Отчёт о редизайне и ссылки на локальные скриншоты: `qa/REDESIGN-REPORT.md`.
 
-## Публикация на GitHub Pages
+## Публикация на GitHub Pages и tm-cert.ru
 
-1. Создайте репозиторий, отправьте туда этот проект, включая `pnpm-lock.yaml` и workflow. Главная ветка workflow — `main`.
-2. В Settings → Pages выберите Source: GitHub Actions.
-3. В Settings → Secrets and variables → Actions → Variables задайте:
-   - `PUBLIC_SITE_URL=https://ВАШ-ЛОГИН.github.io`;
-   - `PUBLIC_BASE_PATH=/ИМЯ-РЕПОЗИТОРИЯ/` (для репозитория `ВАШ-ЛОГИН.github.io` — `/`);
-   - `PUBLIC_SITE_LIVE=true` для готовой публичной версии.
-4. Запустите Actions → Publish Astro to GitHub Pages или отправьте изменение в `main`.
-5. После публикации проверьте главную, вложенную услугу, 404, `sitemap.xml` и `robots.txt`. При размещении в подпапке они лежат в этой подпапке. Google/Яндекс ищут robots в корне домена; для полноценного SEO рекомендуется отдельный домен или корневой Pages-сайт.
+Репозиторий: https://github.com/moiseenkova1987-source/tatyana-moss-certification. Ветка — main, Source в Settings → Pages — GitHub Actions. До перехода сайт опубликован на https://moiseenkova1987-source.github.io/tatyana-moss-certification/.
 
-Workflow пропускает публикацию, пока переменная `PUBLIC_SITE_LIVE` не равна `true`, и не публикует сборку с `example.com`. В GitHub Pages включите Enforce HTTPS. GitHub Pages размещает только статический сайт; российский обработчик заявок подключается отдельно. Репозиторий проекта: https://github.com/moiseenkova1987-source/tatyana-moss-certification. Публичный сайт пока не развернут.
+Подготовленный workflow явно задаёт PUBLIC_SITE_URL=https://tm-cert.ru, PUBLIC_BASE_PATH=/, PUBLIC_SITE_LIVE=false. Эти значения имеют приоритет над старыми repository variables. Домен по умолчанию в astro.config.mjs и образце .env также обновлён. Если используется собственный .env или окружение терминала, проверьте отсутствие прежнего base path.
 
-Официальная инструкция Astro: https://docs.astro.build/ru/guides/deploy/github/
+После согласования перехода:
 
-## Собственный домен
+1. В Settings → Pages → Custom domain задать tm-cert.ru (без HTTPS и пути), Save. Source оставить GitHub Actions.
+2. Настроить DNS в REG.RU по таблице в DOMAIN-SETUP-REPORT.md. Сначала привязать домен в GitHub, затем направлять DNS.
+3. Для согласованности обновить repository variables: PUBLIC_SITE_URL=https://tm-cert.ru, PUBLIC_BASE_PATH=/, PUBLIC_SITE_LIVE=false. Подготовленный workflow использует явные значения, поэтому старые variables не испортят сборку.
+4. После отдельного разрешения отправить изменения в main и дождаться workflow. DNS и выпуск HTTPS-сертификата могут потребовать времени; после успешной проверки включить Enforce HTTPS.
+5. Проверить главную, вложенные страницы, favicon, фото, CSS, sitemap.xml, robots.txt и перенаправление www.tm-cert.ru на tm-cert.ru.
 
-В Pages задайте Custom domain, настройте DNS по указаниям GitHub. Для поддомена обычно используется CNAME на `ВАШ-ЛОГИН.github.io`; для корневого домена — актуальные записи из документации GitHub, не из случайных примеров. При необходимости положите имя домена в `public/CNAME`. Установите `PUBLIC_SITE_URL=https://ваш-домен.ru`, `PUBLIC_BASE_PATH=/`, пересоберите сайт и включите HTTPS. Canonical, sitemap, OG и внутренние ссылки обновятся вместе.
+Для этой схемы custom GitHub Actions файл CNAME не требуется и игнорируется GitHub Pages. Привязка хранится в Settings → Pages и не зависит от очистки dist при Astro build. Не добавляйте CNAME вместо настройки Pages. Источник: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site.
 
-Локальные значения удобно хранить в `.env`, созданном из `.env.example`. `.env` не коммитится. Все `PUBLIC_*` считаются публичными: не помещайте туда пароли или API-ключи.
+Публикация технически возможна с noindex. PUBLIC_SITE_LIVE=false не блокирует deploy, а сохраняет meta robots noindex,nofollow и robots Disallow: /. Проверка release:check предназначена для будущего индексируемого запуска и при false пропускается workflow. Не меняйте false на true без отдельного разрешения, даже после подключения домена.
+
+Локальные значения можно хранить в .env по образцу .env.example. .env не коммитится; PUBLIC_* не предназначены для секретов. GitHub Pages размещает статический сайт, backend заявок подключается отдельно.
 
 ## Подключение формы
 
@@ -141,7 +140,7 @@ Workflow пропускает публикацию, пока переменна�
 
 Каждая страница содержит собственные title/description, один H1, canonical, OG/Twitter metadata. Person использует реальное имя; ProfessionalService описывает консультации, Service — конкретную услугу. FAQPage соответствует видимым раскрывающимся ответам. Рейтингов и отзывов нет. OG-image можно добавить позднее, когда появится согласованное изображение бренда.
 
-До задания домена `PUBLIC_SITE_LIVE=false`: meta robots `noindex,nofollow`, robots `Disallow:/`. Это намеренная защита тестового сайта, а не финальная SEO-настройка. После выбора адреса задайте `true` и пересоберите.
+Даже после подключения домена сохраняйте `PUBLIC_SITE_LIVE=false`: meta robots `noindex,nofollow`, robots `Disallow:/`. Индексация включается только после отдельного разрешения владельца.
 
 ## Блок аккредитованного исполнителя
 

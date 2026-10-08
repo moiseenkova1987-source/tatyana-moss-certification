@@ -19,9 +19,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
-      PUBLIC_BASE_PATH: ${{ vars.PUBLIC_BASE_PATH || '/' }}
-      PUBLIC_SITE_LIVE: ${{ vars.PUBLIC_SITE_LIVE }}
+      # Custom-domain build. Keep indexing disabled until separately approved.
+      PUBLIC_SITE_URL: https://tm-cert.ru
+      PUBLIC_BASE_PATH: /
+      PUBLIC_SITE_LIVE: 'false'
       PUBLIC_FORM_ENDPOINT: ${{ vars.PUBLIC_FORM_ENDPOINT }}
       PUBLIC_YANDEX_VERIFICATION: ${{ vars.PUBLIC_YANDEX_VERIFICATION }}
       PUBLIC_GOOGLE_VERIFICATION: ${{ vars.PUBLIC_GOOGLE_VERIFICATION }}
