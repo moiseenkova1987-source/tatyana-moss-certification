@@ -14,16 +14,14 @@ const enabled =
 <section class="request" id="request">
   <div>
     <p class="eyebrow">Начнём с вашего товара</p>
-    <h2>
-      Что планируете
-      <br />
-      продавать?
-    </h2>
+    <h2>Предварительный вопрос по вашему товару</h2>
     <p class="lead">
-      Расскажите о товаре и задаче. Ссылка, описание или вопрос — хороший первый шаг.
+      Опишите товар и задачу — я посмотрю, с чего лучше начать и какие документы могут
+      потребоваться.
     </p>
     <p class="form-notice">
-      {!enabled && 'Онлайн-отправка заявки пока недоступна. Форма не передает данные.'}
+      {!enabled &&
+        'Онлайн-отправка пока недоступна. Форма не передает данные. Можно связаться напрямую.'}
       {site.email && (
         <>
           {' '}
@@ -50,16 +48,15 @@ const enabled =
       )}
     </p>
     <p class="inline-note">
-      Проверка товара — 1 500 ₽.
-      <br />
-      Стоимость засчитывается в дальнейшее сопровождение.
+      Отправка формы предназначена для предварительного обращения. Она не является заказом услуги и
+      не означает заключение договора. Оплата через сайт не производится.
     </p>
   </div>
   <form
     data-lead-form
     data-endpoint={enabled ? endpoint : ''}
     data-sitekey={enabled ? sitekey : ''}
-    aria-label="Заявка на консультацию"
+    aria-label="Предварительный вопрос по вашему товару"
   >
     <div class="form-grid">
       <label class="field">
@@ -83,30 +80,16 @@ const enabled =
           placeholder="+7 или @username"
         />
       </label>
-      <label class="field">
-        E-mail *
-        <input
-          type="email"
-          name="email"
-          autocomplete="email"
-          required
-          maxlength="254"
-          placeholder="you@example.ru"
-        />
-      </label>
-      <label class="field">
-        Название товара *
+      <label class="field wide">
+        Товар / категория *
         <input name="productName" required maxlength="200" placeholder="Что планируете продавать" />
       </label>
       <label class="field wide">
-        Ссылка на товар <span class="form-hint">Необязательно</span>
-        <input type="url" name="productUrl" maxlength="1000" placeholder="https://" />
-      </label>
-      <label class="field wide">
-        Что требуется / комментарий
+        Ваш вопрос *
         <textarea
           name="message"
           rows="3"
+          required
           maxlength="1500"
           placeholder="Какая задача стоит перед вами?"
         ></textarea>
@@ -125,15 +108,15 @@ const enabled =
     <label class="consent">
       <input type="checkbox" name="consent" required value="accepted" />
       <span>
-        Я даю <a href={url('/personal-data-consent/')}>согласие на обработку персональных данных</a>{' '}
-        и ознакомлен(а) с{' '}
-        <a href={url('/privacy-policy/')}>Политикой обработки персональных данных</a>.
+        Я даю <a href={url('/consent/')}>согласие на обработку моих персональных данных</a>
       </span>
     </label>
+    <p class="form-hint">
+      <a href={url('/privacy/')}>Политика обработки персональных данных</a>
+    </p>
     <div class="form-footer">
       <button class="button" type="submit" disabled>
-        {enabled ? 'Отправить заявку' : 'Отправка пока недоступна'}{' '}
-        <span aria-hidden="true">↗</span>
+        Отправить вопрос <span aria-hidden="true">↗</span>
       </button>
       <p class="form-hint">* Обязательные поля. Не отправляйте паспортные и платежные данные.</p>
     </div>

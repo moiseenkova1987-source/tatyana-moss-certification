@@ -17,6 +17,13 @@ const good = {
   website: '',
   turnstileToken: 'test-token',
 };
+test('preliminary question does not require email or product URL', async () => {
+  const { email, productUrl, ...question } = good;
+  const { fetcher, calls } = upstream();
+  const response = await handleRequest(request(question), env, fetcher);
+  assert.equal(response.status, 200);
+  assert.equal(calls.length, 2);
+});
 function request(body = good, options = {}) {
   return new Request('https://worker.example.invalid/', {
     method: 'POST',
@@ -43,6 +50,7 @@ function upstream({
 }
 for (const [name, patch] of Object.entries({
   'empty required field': { name: ' ' },
+  'empty question': { message: ' ' },
   'invalid email': { email: 'broken' },
   'missing consent': { consent: false },
   'string consent': { consent: 'true' },

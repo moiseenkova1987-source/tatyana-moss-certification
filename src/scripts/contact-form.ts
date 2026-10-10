@@ -9,7 +9,7 @@ declare global {
   }
 }
 const errorMessage =
-  'Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь со мной напрямую.';
+  'Не удалось отправить вопрос. Попробуйте ещё раз или свяжитесь со мной напрямую.';
 let scriptReady: Promise<Turnstile> | undefined;
 function loadTurnstile(): Promise<Turnstile> {
   return (scriptReady ??= new Promise((resolve, reject) => {
@@ -66,19 +66,14 @@ export async function initContactForm(form: HTMLFormElement) {
     return;
   }
   form.addEventListener('input', (event) => {
-    if (event.target instanceof HTMLInputElement) event.target.setCustomValidity('');
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)
+      event.target.setCustomValidity('');
   });
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (pending) return;
-    const link = form.querySelector<HTMLInputElement>('[name=productUrl]')!;
-    link.setCustomValidity(
-      link.value.trim() && !/^https?:\/\//i.test(link.value.trim())
-        ? 'Укажите ссылку http:// или https://.'
-        : '',
-    );
-    for (const name of ['name', 'contact', 'productName']) {
-      const field = form.querySelector<HTMLInputElement>(`[name=${name}]`)!;
+    for (const name of ['name', 'contact', 'productName', 'message']) {
+      const field = form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name=${name}]`)!;
       field.setCustomValidity(!field.value.trim() ? 'Заполните это поле.' : '');
     }
     if (!form.reportValidity()) return;
@@ -93,15 +88,7 @@ export async function initContactForm(form: HTMLFormElement) {
       consent: values.get('consent') === 'accepted',
       turnstileToken: token,
     };
-    for (const key of [
-      'name',
-      'contact',
-      'email',
-      'productName',
-      'productUrl',
-      'message',
-      'website',
-    ])
+    for (const key of ['name', 'contact', 'productName', 'message', 'website'])
       body[key] = String(values.get(key) || '').trim();
     pending = true;
     button.disabled = true;
@@ -122,14 +109,14 @@ export async function initContactForm(form: HTMLFormElement) {
       const data = await response.json();
       if (!response.ok || data.ok !== true) throw new Error();
       form.reset();
-      status.textContent = 'Заявка отправлена. Я свяжусь с вами в ближайшее время.';
+      status.textContent = 'Вопрос отправлен. Я свяжусь с вами в ближайшее время.';
     } catch {
       status.textContent = errorMessage;
     } finally {
       clearTimeout(timeout);
       pending = false;
       form.removeAttribute('aria-busy');
-      button.textContent = 'Отправить заявку ↗';
+      button.textContent = 'Отправить вопрос ↗';
       button.disabled = true;
       api.reset(widget);
       status.focus();

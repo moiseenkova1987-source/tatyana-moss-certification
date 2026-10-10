@@ -17,6 +17,8 @@ const routes = [
   '/marketplaces/',
   '/about/',
   '/contacts/',
+  '/privacy/',
+  '/consent/',
   '/privacy-policy/',
   '/personal-data-consent/',
 ];
@@ -123,7 +125,14 @@ await page.route('**/contacts/?qa=enabled', async (route) => {
 await page.route('https://worker.example.invalid/lead', async (route) => {
   calls++;
   const payload = route.request().postDataJSON();
-  if (payload.consent !== true || payload.turnstileToken !== 'mock-token' || !payload.productName)
+  if (
+    payload.consent !== true ||
+    payload.turnstileToken !== 'mock-token' ||
+    !payload.productName ||
+    !payload.message ||
+    'email' in payload ||
+    'productUrl' in payload
+  )
     errors.push('Wrong frontend protocol');
   await new Promise((resolve) => setTimeout(resolve, 250));
   await route.fulfill({
@@ -144,7 +153,7 @@ async function fill() {
   for (const [name, value] of Object.entries({
     name: 'QA Test',
     contact: '@qa_test',
-    email: 'qa@example.invalid',
+    message: 'Предварительный вопрос QA',
     productName: 'QA товар',
   }))
     await page.locator(`[name=${name}]`).fill(value);
@@ -152,17 +161,15 @@ async function fill() {
 await page.locator('button[type=submit]').click();
 if (calls) errors.push('Empty form submitted');
 await fill();
-await page.locator('[name=email]').fill('invalid');
+await page.locator('[name=message]').fill('   ');
 await page.locator('button[type=submit]').click();
-if (calls) errors.push('Invalid email submitted');
-await page.locator('[name=email]').fill('qa@example.invalid');
+if (calls) errors.push('Empty question submitted');
+await page.locator('[name=message]').fill('Предварительный вопрос QA');
 await page.locator('button[type=submit]').click();
 if (calls) errors.push('Submitted without consent');
 await page.locator('[name=consent]').check();
-await page.locator('[name=productUrl]').fill('ftp://example.invalid');
-await page.locator('button[type=submit]').click();
-if (calls) errors.push('Invalid URL submitted');
-await page.locator('[name=productUrl]').fill('');
+if (await page.locator('[name=email], [name=productUrl]').count())
+  errors.push('Removed fields still present');
 await page.evaluate(() => (window.qaToken = ''));
 await page.locator('button[type=submit]').click();
 await page.getByRole('status').filter({ hasText: 'Пройдите проверку' }).waitFor();
@@ -172,7 +179,7 @@ await page.locator('button[type=submit]').click();
 await page.evaluate(() => {
   document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
 });
-await page.getByRole('status').filter({ hasText: 'Заявка отправлена' }).waitFor();
+await page.getByRole('status').filter({ hasText: 'Вопрос отправлен' }).waitFor();
 if (calls !== 1) errors.push('Double submission not prevented');
 if ((await page.locator('[name=name]').inputValue()) !== '')
   errors.push('Success did not reset form');
@@ -181,7 +188,7 @@ mode = 'error';
 await fill();
 await page.locator('[name=consent]').check();
 await page.locator('button[type=submit]').click();
-await page.getByRole('status').filter({ hasText: 'Не удалось отправить заявку' }).waitFor();
+await page.getByRole('status').filter({ hasText: 'Не удалось отправить вопрос' }).waitFor();
 if ((await page.locator('[name=name]').inputValue()) !== 'QA Test') errors.push('Error lost input');
 if (!(await page.getByRole('status').evaluate((el) => el === document.activeElement)))
   errors.push('Result not focused');
@@ -209,7 +216,7 @@ await writeFile(
         defaultDisabled: true,
         noDisabledExternalRequests: true,
         consentRequired: true,
-        emptyAndEmailAndUrlValidated: true,
+        requiredFieldsAndQuestionValidated: true,
         tokenRequired: true,
         doubleClickBlocked: true,
         resultFocused: true,

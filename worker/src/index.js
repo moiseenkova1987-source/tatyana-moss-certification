@@ -1,3 +1,5 @@
+// Development reference only. Do not use for production personal-data collection.
+// The public form stays disabled until a Russian backend is selected and reviewed.
 // No request bodies, identifiers or upstream errors are logged or persisted.
 const MAX_BYTES = 16384;
 const ERROR = 'Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь со мной напрямую.';
@@ -103,10 +105,12 @@ export function validate(input) {
     !data.name ||
     data.contact.length < 3 ||
     !data.productName ||
+    !data.message ||
     !data.turnstileToken
   )
     return null;
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(data.email)) return null;
+  // Legacy optional fields remain accepted for development clients only.
+  if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(data.email)) return null;
   if (data.productUrl) {
     try {
       const link = new URL(data.productUrl);
@@ -138,7 +142,7 @@ export async function deliverNotification(data, origin, env, fetcher = fetch) {
     '',
     `Имя: ${data.name}`,
     `Телефон / Telegram: ${data.contact}`,
-    `E-mail: ${data.email}`,
+    `E-mail: ${data.email || '—'}`,
     `Товар: ${data.productName}`,
     `Ссылка: ${data.productUrl || '—'}`,
     `Комментарий: ${data.message || '—'}`,

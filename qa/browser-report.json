@@ -68,6 +68,18 @@
     },
     {
       "width": 360,
+      "route": "/privacy/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/consent/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
       "route": "/privacy-policy/",
       "status": 200,
       "overflow": false
@@ -146,6 +158,18 @@
     },
     {
       "width": 390,
+      "route": "/privacy/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/consent/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
       "route": "/privacy-policy/",
       "status": 200,
       "overflow": false
@@ -224,6 +248,18 @@
     },
     {
       "width": 768,
+      "route": "/privacy/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/consent/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
       "route": "/privacy-policy/",
       "status": 200,
       "overflow": false
@@ -297,6 +333,18 @@
     {
       "width": 1440,
       "route": "/contacts/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/privacy/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/consent/",
       "status": 200,
       "overflow": false
     },
@@ -379,7 +427,7 @@
     "defaultDisabled": true,
     "noDisabledExternalRequests": true,
     "consentRequired": true,
-    "emptyAndEmailAndUrlValidated": true,
+    "requiredFieldsAndQuestionValidated": true,
     "tokenRequired": true,
     "doubleClickBlocked": true,
     "resultFocused": true,

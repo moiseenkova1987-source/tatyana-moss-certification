@@ -11,7 +11,7 @@ export const site = {
   experience: 15,
   legal: {
     ready: false, // После заполнения реквизитов и согласования правовых текстов
-    operator: '',
+    operator: 'Татьяна Моисеенкова',
     address: '',
     inn: '',
     retention:

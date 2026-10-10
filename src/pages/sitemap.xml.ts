@@ -8,6 +8,8 @@ export const GET: APIRoute = ({ site: origin }) => {
     '/services/',
     '/about/',
     '/contacts/',
+    '/privacy/',
+    '/consent/',
     '/privacy-policy/',
     '/personal-data-consent/',
     ...services.map((s) => `/${s.slug}/`),

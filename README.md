@@ -118,7 +118,7 @@ scripts/release-check.mjs   проверка конфигурации перед
 
 ## Подключение формы
 
-Подготовлен отдельный Cloudflare Worker с Turnstile и уведомлениями Telegram. Форма остаётся выключенной: PUBLIC_CONTACT_FORM_ENABLED=false; дополнительно требуется legal.ready и реквизиты оператора. Backend-секреты не входят в Astro-сборку. Полная инструкция, ограничения и порядок отдельного включения: [docs/contact-form.md](docs/contact-form.md). Проверка backend без внешних запросов: pnpm test:worker.
+Форма предназначена для предварительного вопроса: имя, телефон или Telegram, товар/категория и вопрос. Она выключена: PUBLIC_CONTACT_FORM_ENABLED=false, legal.ready=false. До реального запуска требуется российский backend для первичной записи и хранения обращений; существующий Cloudflare Worker сохранён только для разработки и не используется формой для production-сбора данных. Правовые страницы: /consent/ и /privacy/. Подробности: [docs/contact-form.md](docs/contact-form.md). Проверка прототипа без внешних запросов: pnpm test:worker.
 
 ## Яндекс Метрика
 
