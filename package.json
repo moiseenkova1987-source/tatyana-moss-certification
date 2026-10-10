@@ -9,7 +9,8 @@
     "preview": "astro preview --host 127.0.0.1",
     "check": "astro check",
     "audit:site": "node scripts/audit.mjs",
-    "release:check": "node scripts/release-check.mjs"
+    "release:check": "node scripts/release-check.mjs",
+    "test:worker": "node --test worker/test/*.test.mjs"
   },
   "dependencies": {
     "astro": "^6.0.0"

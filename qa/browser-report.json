@@ -377,7 +377,13 @@
   ],
   "form": {
     "defaultDisabled": true,
+    "noDisabledExternalRequests": true,
     "consentRequired": true,
+    "emptyAndEmailAndUrlValidated": true,
+    "tokenRequired": true,
+    "doubleClickBlocked": true,
+    "resultFocused": true,
+    "mobileAnd200Percent": true,
     "successAndErrorMocked": true
   },
   "errors": []

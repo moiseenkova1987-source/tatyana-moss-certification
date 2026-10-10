@@ -5,3 +5,6 @@ dist/
 .env.*
 !.env.example
 qa/screenshots/
+.wrangler/
+**/.dev.vars*
+!**/.dev.vars.example

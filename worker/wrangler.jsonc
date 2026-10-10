@@ -1,0 +1,14 @@
+{
+  "name": "tm-cert-contact",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-10",
+  "workers_dev": true,
+  "vars": { "ENVIRONMENT": "production" },
+  "observability": { "enabled": false },
+  "env": {
+    "development": {
+      "name": "tm-cert-contact-development",
+      "vars": { "ENVIRONMENT": "development" },
+    },
+  },
+}
