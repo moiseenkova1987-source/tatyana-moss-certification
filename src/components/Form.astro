@@ -1,7 +1,7 @@
 ---
 import { site, url } from '../data/site';
 const endpoint = import.meta.env.PUBLIC_CONTACT_API_URL || '';
-const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
+const sitekey = import.meta.env.PUBLIC_SMARTCAPTCHA_CLIENT_KEY || '';
 const enabled =
   import.meta.env.PUBLIC_CONTACT_FORM_ENABLED === 'true' &&
   /^https:\/\//.test(endpoint) &&
@@ -104,7 +104,7 @@ const enabled =
         aria-label="Оставьте пустым"
       />
     </div>
-    <div data-turnstile></div>
+    <div data-smartcaptcha></div>
     <label class="consent">
       <input type="checkbox" name="consent" required value="accepted" />
       <span>

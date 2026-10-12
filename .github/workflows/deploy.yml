@@ -24,9 +24,9 @@ jobs:
       PUBLIC_BASE_PATH: /
       PUBLIC_SITE_LIVE: 'false'
       # Activation requires a separate approved change; preparing keys alone does not enable it.
-      PUBLIC_CONTACT_FORM_ENABLED: 'false'
+      PUBLIC_CONTACT_FORM_ENABLED: ${{ vars.PUBLIC_CONTACT_FORM_ENABLED || 'false' }}
       PUBLIC_CONTACT_API_URL: ${{ vars.PUBLIC_CONTACT_API_URL }}
-      PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.PUBLIC_TURNSTILE_SITE_KEY }}
+      PUBLIC_SMARTCAPTCHA_CLIENT_KEY: ${{ vars.PUBLIC_SMARTCAPTCHA_CLIENT_KEY }}
       PUBLIC_YANDEX_VERIFICATION: ${{ vars.PUBLIC_YANDEX_VERIFICATION }}
       PUBLIC_GOOGLE_VERIFICATION: ${{ vars.PUBLIC_GOOGLE_VERIFICATION }}
 

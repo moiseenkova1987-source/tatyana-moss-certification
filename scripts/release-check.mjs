@@ -16,8 +16,11 @@ if (
   !process.env.PUBLIC_CONTACT_API_URL?.startsWith('https://')
 )
   failures.push('Endpoint должен использовать HTTPS.');
-if (process.env.PUBLIC_CONTACT_FORM_ENABLED === 'true' && !process.env.PUBLIC_TURNSTILE_SITE_KEY)
-  failures.push('Для формы требуется PUBLIC_TURNSTILE_SITE_KEY.');
+if (
+  process.env.PUBLIC_CONTACT_FORM_ENABLED === 'true' &&
+  !process.env.PUBLIC_SMARTCAPTCHA_CLIENT_KEY
+)
+  failures.push('Для формы требуется PUBLIC_SMARTCAPTCHA_CLIENT_KEY.');
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);

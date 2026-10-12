@@ -31,8 +31,8 @@ for (const width of [360, 390, 768, 1440]) {
   const page = await browser.newPage({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('request', (request) => {
-    if (request.url().startsWith('https://challenges.cloudflare.com/'))
-      errors.push('Disabled form loaded Turnstile');
+    if (request.url().startsWith('https://smartcaptcha.cloud.yandex.ru/'))
+      errors.push('Disabled form loaded SmartCaptcha');
     if (request.method() === 'POST') errors.push('Disabled page submitted data');
   });
   for (const route of routes) {
@@ -105,33 +105,36 @@ if (
     .evaluate((el) => el.open))
 )
   errors.push('FAQ does not open');
-// Exercise the production client using local HTML and mocked Turnstile/API only.
+// Exercise the production client using local HTML and mocked SmartCaptcha/API only.
 let mode = 'success',
   calls = 0;
-await page.route('https://challenges.cloudflare.com/**', (route) =>
+await page.route('https://smartcaptcha.cloud.yandex.ru/**', (route) =>
   route.fulfill({
     contentType: 'application/javascript',
-    body: `window.turnstile={render(el,opts){const frame=document.createElement('iframe');frame.title='Проверка защиты (имитация QA)';frame.width=150;frame.height=140;frame.style.border='0';el.append(frame);window.qaTurnstileOptions=opts;window.qaToken='mock-token';setTimeout(()=>opts.callback(),0);return 'mock-widget'},getResponse(){return window.qaToken},reset(){window.qaToken='mock-token';setTimeout(()=>window.qaTurnstileOptions.callback(),100)}};`,
+    body: `window.qaEvents={};window.smartCaptcha={render(el,opts){const frame=document.createElement('iframe');frame.title='Проверка защиты (имитация QA)';frame.style.width='100%';frame.height=100;frame.style.border='0';el.append(frame);window.qaSmartCaptchaOptions=opts;window.qaToken='mock-token';setTimeout(()=>opts.callback(window.qaToken),0);return 0},getResponse(){return window.qaToken},subscribe(id,event,callback){window.qaEvents[event]=callback;return ()=>{}},reset(){window.qaToken='';window.qaSmartCaptchaOptions.callback('');setTimeout(()=>{window.qaToken='mock-token';window.qaSmartCaptchaOptions.callback(window.qaToken)},100)}};window.tmCertSmartCaptchaLoaded();`,
   }),
 );
 await page.route('**/contacts/?qa=enabled', async (route) => {
   const response = await route.fetch();
   let html = await response.text();
   html = html
-    .replace(/data-endpoint(?:="")?(?=\s)/, 'data-endpoint="https://worker.example.invalid/lead"')
+    .replace(/data-endpoint(?:="")?(?=\s)/, 'data-endpoint="https://api.example.invalid/"')
     .replace(/data-sitekey(?:="")?(?=\s)/, 'data-sitekey="test-public-key"');
   await route.fulfill({ response, body: html });
 });
-await page.route('https://worker.example.invalid/lead', async (route) => {
+await page.route('https://api.example.invalid/', async (route) => {
   calls++;
   const payload = route.request().postDataJSON();
   if (
     payload.consent !== true ||
-    payload.turnstileToken !== 'mock-token' ||
+    payload.captchaToken !== 'mock-token' ||
     !payload.productName ||
     !payload.message ||
     'email' in payload ||
-    'productUrl' in payload
+    'productUrl' in payload ||
+    Object.keys(payload).sort().join(',') !==
+      'captchaToken,consent,contact,message,name,productName,website' ||
+    route.request().headers()['content-type'] !== 'application/json'
   )
     errors.push('Wrong frontend protocol');
   await new Promise((resolve) => setTimeout(resolve, 250));
@@ -142,7 +145,7 @@ await page.route('https://worker.example.invalid/lead', async (route) => {
   });
 });
 await page.goto(origin + '/contacts/?qa=enabled');
-await page.waitForFunction(() => window.qaTurnstileOptions);
+await page.waitForFunction(() => window.qaSmartCaptchaOptions);
 if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth))
   errors.push('Active form mobile overflow');
 await page.evaluate(() => (document.documentElement.style.fontSize = '200%'));
@@ -193,6 +196,26 @@ if ((await page.locator('[name=name]').inputValue()) !== 'QA Test') errors.push(
 if (!(await page.getByRole('status').evaluate((el) => el === document.activeElement)))
   errors.push('Result not focused');
 await page.screenshot({ path: 'qa/screenshots/contact-form-active-mock-390.png', fullPage: true });
+await page.waitForTimeout(150);
+for (const event of ['token-expired', 'network-error', 'javascript-error']) {
+  await page.evaluate((event) => window.qaEvents[event](), event);
+  if (!(await page.locator('button[type=submit]').isDisabled()))
+    errors.push(event + ' did not disable submit');
+  await page.evaluate(() =>
+    document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true })),
+  );
+  if (calls !== 2) errors.push(event + ' allowed submission');
+  await page.evaluate(() => window.qaSmartCaptchaOptions.callback('mock-token'));
+}
+if (!(await page.locator('button[type=submit]').isDisabled()))
+  errors.push('Critical CAPTCHA error allowed recovery without reload');
+await page.unroute('https://smartcaptcha.cloud.yandex.ru/**');
+await page.route('https://smartcaptcha.cloud.yandex.ru/**', (route) => route.abort());
+await page.goto(origin + '/contacts/?qa=enabled');
+await page.getByRole('status').filter({ hasText: 'Не удалось отправить вопрос' }).waitFor();
+if (!(await page.locator('button[type=submit]').isDisabled()))
+  errors.push('Script load failure enabled submit');
+
 const nojs = await browser.newPage({
   javaScriptEnabled: false,
   viewport: { width: 390, height: 844 },
@@ -218,6 +241,9 @@ await writeFile(
         consentRequired: true,
         requiredFieldsAndQuestionValidated: true,
         tokenRequired: true,
+        captchaExpiryAndErrorsBlocked: true,
+        captchaScriptFailureBlocked: true,
+        exactYandexContract: true,
         doubleClickBlocked: true,
         resultFocused: true,
         mobileAnd200Percent: true,

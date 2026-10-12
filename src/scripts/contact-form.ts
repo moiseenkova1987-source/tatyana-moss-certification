@@ -1,27 +1,38 @@
-type Turnstile = {
-  render: (element: HTMLElement, options: Record<string, unknown>) => string;
-  getResponse: (id: string) => string;
-  reset: (id: string) => void;
+type SmartCaptcha = {
+  render: (element: HTMLElement, options: Record<string, unknown>) => number;
+  getResponse: (id: number) => string;
+  reset: (id: number) => void;
+  subscribe: (id: number, event: string, callback: () => void) => () => void;
 };
 declare global {
   interface Window {
-    turnstile?: Turnstile;
+    smartCaptcha?: SmartCaptcha;
+    tmCertSmartCaptchaLoaded?: () => void;
   }
 }
 const errorMessage =
   'Не удалось отправить вопрос. Попробуйте ещё раз или свяжитесь со мной напрямую.';
-let scriptReady: Promise<Turnstile> | undefined;
-function loadTurnstile(): Promise<Turnstile> {
+let scriptReady: Promise<SmartCaptcha> | undefined;
+function loadSmartCaptcha(): Promise<SmartCaptcha> {
   return (scriptReady ??= new Promise((resolve, reject) => {
-    if (window.turnstile) {
-      resolve(window.turnstile);
+    if (window.smartCaptcha) {
+      resolve(window.smartCaptcha);
       return;
     }
     const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    const timeout = setTimeout(() => reject(new Error()), 15000);
+    window.tmCertSmartCaptchaLoaded = () => {
+      clearTimeout(timeout);
+      if (window.smartCaptcha) resolve(window.smartCaptcha);
+      else reject(new Error());
+    };
+    script.src =
+      'https://smartcaptcha.cloud.yandex.ru/captcha.js?render=onload&onload=tmCertSmartCaptchaLoaded';
     script.async = true;
-    script.onload = () => (window.turnstile ? resolve(window.turnstile) : reject(new Error()));
-    script.onerror = () => reject(new Error());
+    script.onerror = () => {
+      clearTimeout(timeout);
+      reject(new Error());
+    };
     document.head.append(script);
   }));
 }
@@ -40,27 +51,32 @@ export async function initContactForm(form: HTMLFormElement) {
   }
   button.disabled = true;
   let pending = false;
-  let api: Turnstile;
-  let widget: string;
+  let captchaValid = false;
+  let criticalCaptchaError = false;
+  let api: SmartCaptcha;
+  let widget: number;
   try {
-    api = await loadTurnstile();
-    widget = api.render(form.querySelector<HTMLElement>('[data-turnstile]')!, {
+    api = await loadSmartCaptcha();
+    widget = api.render(form.querySelector<HTMLElement>('[data-smartcaptcha]')!, {
       sitekey,
-      action: 'contact',
-      size: 'compact',
-      language: 'ru',
-      'response-field': false,
-      callback: () => {
-        if (!pending) button.disabled = false;
-      },
-      'expired-callback': () => {
-        if (!pending) button.disabled = true;
-      },
-      'error-callback': () => {
-        button.disabled = true;
-        status.textContent = errorMessage;
+      hl: 'ru',
+      callback: (token: string) => {
+        captchaValid = !!token && !criticalCaptchaError;
+        button.disabled = pending || !captchaValid;
       },
     });
+    api.subscribe(widget, 'token-expired', () => {
+      captchaValid = false;
+      button.disabled = true;
+    });
+    for (const event of ['network-error', 'javascript-error']) {
+      api.subscribe(widget, event, () => {
+        if (event === 'javascript-error') criticalCaptchaError = true;
+        captchaValid = false;
+        button.disabled = true;
+        status.textContent = errorMessage;
+      });
+    }
   } catch {
     status.textContent = errorMessage;
     return;
@@ -78,7 +94,7 @@ export async function initContactForm(form: HTMLFormElement) {
     }
     if (!form.reportValidity()) return;
     const token = api.getResponse(widget);
-    if (!token) {
+    if (!token || !captchaValid || criticalCaptchaError) {
       status.textContent = 'Пройдите проверку защиты от автоматических заявок.';
       status.focus();
       return;
@@ -86,7 +102,7 @@ export async function initContactForm(form: HTMLFormElement) {
     const values = new FormData(form);
     const body: Record<string, string | boolean> = {
       consent: values.get('consent') === 'accepted',
-      turnstileToken: token,
+      captchaToken: token,
     };
     for (const key of ['name', 'contact', 'productName', 'message', 'website'])
       body[key] = String(values.get(key) || '').trim();
@@ -118,6 +134,7 @@ export async function initContactForm(form: HTMLFormElement) {
       form.removeAttribute('aria-busy');
       button.textContent = 'Отправить вопрос ↗';
       button.disabled = true;
+      captchaValid = false;
       api.reset(widget);
       status.focus();
     }
