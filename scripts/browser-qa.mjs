@@ -24,7 +24,15 @@ const routes = [
 ];
 const results = [],
   errors = [];
-const visualRoutes = ['/', '/services/', '/about/', '/contacts/', '/proverka-tovara/'];
+const visualRoutes = [
+  '/',
+  '/services/',
+  '/about/',
+  '/contacts/',
+  '/proverka-tovara/',
+  '/privacy/',
+  '/personal-data-consent/',
+];
 const zoomResults = [];
 await mkdir('qa/screenshots', { recursive: true });
 for (const width of [360, 390, 768, 1440]) {
@@ -93,6 +101,24 @@ await page.goto(origin + '/contacts/');
 if (!(await page.locator('button[type=submit]').isDisabled()))
   errors.push('Default form is not disabled');
 if (await page.locator('input[name=consent]').isChecked()) errors.push('Prechecked consent');
+if (!((await page.locator('input[name=consent]').getAttribute('required')) !== null))
+  errors.push('Consent not required');
+for (const selector of ['.consent', '.footer-bottom']) {
+  for (const path of ['/privacy/', '/personal-data-consent/']) {
+    const link = page.locator(selector + ' a[href="' + path + '"]');
+    if ((await link.count()) !== 1) errors.push('Missing legal link: ' + selector + path);
+  }
+}
+await page.locator('.consent a').first().focus();
+await page.keyboard.press('Tab');
+if (
+  !(await page
+    .locator('.consent a')
+    .nth(1)
+    .evaluate((el) => el === document.activeElement))
+)
+  errors.push('Legal links keyboard navigation failed');
+await page.reload();
 await page.keyboard.press('Tab');
 if (!(await page.locator('.skip-link').evaluate((el) => el === document.activeElement)))
   errors.push('Skip link inaccessible');

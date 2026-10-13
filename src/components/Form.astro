@@ -47,10 +47,6 @@ const enabled =
         </>
       )}
     </p>
-    <p class="inline-note">
-      Отправка формы предназначена для предварительного обращения. Она не является заказом услуги и
-      не означает заключение договора. Оплата через сайт не производится.
-    </p>
   </div>
   <form
     data-lead-form
@@ -108,18 +104,22 @@ const enabled =
     <label class="consent">
       <input type="checkbox" name="consent" required value="accepted" />
       <span>
-        Я даю <a href={url('/consent/')}>согласие на обработку моих персональных данных</a>
+        Я даю <a href={url('/personal-data-consent/')}>согласие на обработку персональных данных</a>{' '}
+        и подтверждаю, что ознакомлен(а) с{' '}
+        <a href={url('/privacy/')}>Политикой обработки персональных данных</a>.
       </span>
     </label>
-    <p class="form-hint">
-      <a href={url('/privacy/')}>Политика обработки персональных данных</a>
-    </p>
     <div class="form-footer">
       <button class="button" type="submit" disabled>
         Отправить вопрос <span aria-hidden="true">↗</span>
       </button>
       <p class="form-hint">* Обязательные поля. Не отправляйте паспортные и платежные данные.</p>
     </div>
+    <p class="form-hint">
+      Форма предназначена для предварительного обращения и запроса консультации. Отправка формы не
+      является оформлением заказа, заключением договора или оплатой услуги. Для защиты от
+      автоматических запросов используется Yandex SmartCaptcha.
+    </p>
     <p class="form-status" role="status" aria-live="polite" tabindex="-1"></p>
     <noscript>
       <p class="form-notice">

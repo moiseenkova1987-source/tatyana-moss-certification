@@ -393,6 +393,18 @@
       "overflow": false
     },
     {
+      "width": 390,
+      "route": "/privacy/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/personal-data-consent/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
       "width": 1440,
       "route": "/",
       "textScale": "200%",
@@ -419,6 +431,18 @@
     {
       "width": 1440,
       "route": "/proverka-tovara/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/privacy/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/personal-data-consent/",
       "textScale": "200%",
       "overflow": false
     }
