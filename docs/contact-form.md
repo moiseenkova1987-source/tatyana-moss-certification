@@ -6,7 +6,7 @@
 
 PUBLIC_CONTACT_FORM_ENABLED=false, legal.ready=false, PUBLIC_SITE_LIVE=false. Workflow сохраняет PUBLIC_SITE_LIVE=false и читает PUBLIC_CONTACT_FORM_ENABLED из Repository Variables с безопасным значением false по умолчанию. legal.ready=false дополнительно блокирует активацию. При выключенной форме в HTML пустые data-endpoint/data-sitekey, кнопка disabled; клиент не загружает SmartCaptcha и не обращается к API. Сайт использует https://tm-cert.ru и base /, noindex/nofollow.
 
-Четыре обязательных поля: name (100), contact (100, минимум 3), productName (200), message (1500). E-mail и ссылка на товар удалены из интерфейса и payload нового клиента. Согласие — отдельный unchecked required checkbox, ссылка /consent/. Политика доступна отдельно по /privacy/. Прямые контакты Telegram, MAX, телефон и e-mail сохранены.
+Четыре обязательных поля: name (100), contact (100, минимум 3), productName (200), message (1500). E-mail и ссылка на товар удалены из интерфейса и payload нового клиента. Согласие — отдельный unchecked required checkbox, ссылка /personal-data-consent/. Политика доступна отдельно по /privacy/. Прямые контакты Telegram, MAX, телефон и e-mail сохранены.
 
 ## Условия будущего запуска
 
@@ -16,7 +16,7 @@ PUBLIC_CONTACT_FORM_ENABLED=false, legal.ready=false, PUBLIC_SITE_LIVE=false. Wo
 
 ## Текущий frontend/backend контракт
 
-Подготовленная интеграция использует Yandex Cloud Function из PUBLIC_CONTACT_API_URL. POST application/json содержит ровно name, contact, productName, message, consent (true), website (пустой honeypot), captchaToken. Ожидается HTTP 200 с {"ok":true,"requestId":"..."}; ошибки показываются без внутренних данных.
+Подготовленная интеграция использует Yandex Cloud Function из PUBLIC_CONTACT_API_URL. POST application/json содержит ровно name, contact, productName, message, consent (true), website (пустой honeypot), captchaToken, requestId (UUID v4). Ожидается HTTP 200 с {"ok":true,"requestId":"..."}; ошибки показываются без внутренних данных.
 
 src/scripts/contact-form.ts загружает официальный https://smartcaptcha.cloud.yandex.ru/captcha.js через расширенный onload-метод, только если форма разрешена. PUBLIC_SMARTCAPTCHA_CLIENT_KEY — публичный клиентский ключ. Серверный ключ хранится исключительно в Yandex Lockbox, frontend его не использует. Токен берётся через smartCaptcha.getResponse; истечение токена, сетевые и критические ошибки блокируют отправку. При критической ошибке требуется перезагрузка страницы.
 
@@ -31,3 +31,7 @@ Secrets прототипа: TURNSTILE_SECRET_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_C
 ## Проверки
 
 pnpm check; pnpm build; pnpm audit:site; pnpm test:worker. Browser QA проверяет выключенное состояние, отсутствие запросов, обязательные поля и согласие, имитацию отправки, мобильные экраны и текст 200%. До будущего запуска отдельно проверить российский backend и соответствие фактического процесса правовым страницам.
+
+Клиент ждёт ответ 65 секунд. UUID повторной попытки сохраняется до запроса в sessionStorage вместе с SHA-256 отпечатком полей (без открытого текста). Повтор с теми же данными после ошибки или reload в той же вкладке использует тот же ID; YDB атомарно не создаёт вторую запись и не сбрасывает её статус. При недоступном storage POST не выполняется. До включения формы отдельно развернуть новую версию Yandex Function с requestId и проверить реальный YQL; текущая публикация меняет только сайт.
+
+Старые /consent/ и /privacy-policy/ исключены из sitemap. На GitHub Pages они возвращают статический HTML (не HTTP 301): мгновенный meta refresh, canonical на актуальный документ и постоянный noindex/nofollow даже при PUBLIC_SITE_LIVE=true.

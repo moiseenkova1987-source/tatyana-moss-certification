@@ -1,3 +1,5 @@
+import { requestIdentity } from './request-identity';
+
 type SmartCaptcha = {
   render: (element: HTMLElement, options: Record<string, unknown>) => number;
   getResponse: (id: number) => string;
@@ -112,8 +114,11 @@ export async function initContactForm(form: HTMLFormElement) {
     form.setAttribute('aria-busy', 'true');
     status.textContent = 'Отправляем…';
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20000);
+    // Longer than the intended 60-second Function timeout. Idempotency, not this
+    // timer, protects against a committed write whose response was lost.
+    const timeout = setTimeout(() => controller.abort(), 65000);
     try {
+      body.requestId = await requestIdentity(endpoint, body);
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -123,11 +128,12 @@ export async function initContactForm(form: HTMLFormElement) {
         referrerPolicy: 'no-referrer',
       });
       const data = await response.json();
-      if (!response.ok || data.ok !== true) throw new Error();
+      if (!response.ok || data.ok !== true || data.requestId !== body.requestId) throw new Error();
       form.reset();
       status.textContent = 'Вопрос отправлен. Я свяжусь с вами в ближайшее время.';
     } catch {
-      status.textContent = errorMessage;
+      status.textContent =
+        'Не удалось подтвердить получение вопроса. Повторите отправку с теми же данными или свяжитесь со мной напрямую.';
     } finally {
       clearTimeout(timeout);
       pending = false;

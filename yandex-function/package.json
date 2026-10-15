@@ -1,0 +1,17 @@
+{
+  "name": "tm-cert-contact-yandex",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Preliminary questions API for Yandex Cloud Functions and YDB",
+  "main": "index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "ydb-sdk": "5.11.1"
+  }
+}

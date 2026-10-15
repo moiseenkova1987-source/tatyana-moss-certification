@@ -24,7 +24,17 @@ const pages = new Map();
 for (const file of html) {
   const $ = load(await readFile(file, 'utf8'));
   const canonical = $('link[rel=canonical]').attr('href');
-  if (canonical) pages.set(new URL(canonical).pathname, { $, file });
+  if (canonical)
+    pages.set(
+      $('meta[http-equiv=refresh]').length
+        ? '/' +
+            path
+              .relative(root, file)
+              .replaceAll('\\', '/')
+              .replace(/index\.html$/, '')
+        : new URL(canonical).pathname,
+      { $, file },
+    );
 }
 for (const file of html) {
   const $ = load(await readFile(file, 'utf8')),
@@ -32,6 +42,20 @@ for (const file of html) {
     title = $('title').text(),
     desc = $('meta[name=description]').attr('content');
   check($('h1').length === 1, `${name}: требуется один H1`);
+  if (process.env.PUBLIC_SITE_LIVE !== 'true')
+    check(
+      $('meta[name=robots]').attr('content') === 'noindex, nofollow',
+      `${name}: индексация должна быть выключена`,
+    );
+  if (process.env.PUBLIC_CONTACT_FORM_ENABLED !== 'true') {
+    for (const form of $('[data-lead-form]').toArray()) {
+      check(
+        !$(form).attr('data-endpoint') && !$(form).attr('data-sitekey'),
+        `${name}: выключенная форма содержит API/key`,
+      );
+      check($(form).find('button[type=submit]').is('[disabled]'), `${name}: кнопка формы включена`);
+    }
+  }
   check(!!title && !titles.has(title), `${name}: title отсутствует/не уникален`);
   check(!!desc && !descriptions.has(desc), `${name}: description отсутствует/не уникален`);
   titles.add(title);
@@ -100,11 +124,39 @@ const xml = load(await readFile(path.join(root, 'sitemap.xml'), 'utf8'), { xmlMo
 const sitemap = xml('loc')
   .toArray()
   .map((e) => xml(e).text());
-check(sitemap.length === html.length - 1, 'sitemap: количество страниц');
+const redirects = { '/consent/': '/personal-data-consent/', '/privacy-policy/': '/privacy/' };
+check(
+  sitemap.length === html.length - 1 - Object.keys(redirects).length,
+  'sitemap: количество страниц',
+);
+for (const [oldPath, target] of Object.entries(redirects)) {
+  const page = pages.get(oldPath);
+  check(!!page, `redirect: отсутствует ${oldPath}`);
+  if (page) {
+    check(
+      page.$('meta[name=robots]').attr('content') === 'noindex, nofollow',
+      `redirect robots: ${oldPath}`,
+    );
+    check(
+      page.$('meta[http-equiv=refresh]').attr('content') === `0;url=${target}`,
+      `redirect refresh: ${oldPath}`,
+    );
+    check(
+      page.$('link[rel=canonical]').attr('href') === `https://tm-cert.ru${target}`,
+      `redirect canonical: ${oldPath}`,
+    );
+  }
+  check(
+    !sitemap.some((loc) => new URL(loc).pathname === oldPath),
+    `sitemap: старый URL ${oldPath}`,
+  );
+}
 for (const loc of sitemap) check(pages.has(new URL(loc).pathname), `sitemap: отсутствует ${loc}`);
 check(!sitemap.some((x) => /404/.test(x)), 'sitemap содержит страницу 404');
 const robots = await readFile(path.join(root, 'robots.txt'), 'utf8');
 check(robots.includes('Sitemap: ') && robots.includes('/sitemap.xml'), 'robots: нет sitemap');
+if (process.env.PUBLIC_SITE_LIVE !== 'true')
+  check(robots.includes('Disallow: /'), 'robots: индексация должна быть запрещена');
 await mkdir('qa', { recursive: true });
 await writeFile(
   'qa/seo-report.json',

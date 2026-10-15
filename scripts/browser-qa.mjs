@@ -45,6 +45,8 @@ for (const width of [360, 390, 768, 1440]) {
   });
   for (const route of routes) {
     const response = await page.goto(origin + route);
+    if (route === '/consent/') await page.waitForURL(origin + '/personal-data-consent/');
+    if (route === '/privacy-policy/') await page.waitForURL(origin + '/privacy/');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
     if (response.status() !== 200 || overflow)
       errors.push(`${width} ${route}: HTTP ${response.status()}, overflow=${overflow}`);
@@ -159,7 +161,8 @@ await page.route('https://api.example.invalid/', async (route) => {
     'email' in payload ||
     'productUrl' in payload ||
     Object.keys(payload).sort().join(',') !==
-      'captchaToken,consent,contact,message,name,productName,website' ||
+      'captchaToken,consent,contact,message,name,productName,requestId,website' ||
+    !/^[0-9a-f-]{36}$/.test(payload.requestId) ||
     route.request().headers()['content-type'] !== 'application/json'
   )
     errors.push('Wrong frontend protocol');
@@ -167,7 +170,7 @@ await page.route('https://api.example.invalid/', async (route) => {
   await route.fulfill({
     status: mode === 'success' ? 200 : 502,
     contentType: 'application/json',
-    body: JSON.stringify({ ok: mode === 'success' }),
+    body: JSON.stringify({ ok: mode === 'success', requestId: payload.requestId }),
   });
 });
 await page.goto(origin + '/contacts/?qa=enabled');
@@ -217,7 +220,10 @@ mode = 'error';
 await fill();
 await page.locator('[name=consent]').check();
 await page.locator('button[type=submit]').click();
-await page.getByRole('status').filter({ hasText: 'Не удалось отправить вопрос' }).waitFor();
+await page
+  .getByRole('status')
+  .filter({ hasText: 'Не удалось подтвердить получение вопроса' })
+  .waitFor();
 if ((await page.locator('[name=name]').inputValue()) !== 'QA Test') errors.push('Error lost input');
 if (!(await page.getByRole('status').evaluate((el) => el === document.activeElement)))
   errors.push('Result not focused');

@@ -9,8 +9,6 @@ export const GET: APIRoute = ({ site: origin }) => {
     '/about/',
     '/contacts/',
     '/privacy/',
-    '/consent/',
-    '/privacy-policy/',
     '/personal-data-consent/',
     ...services.map((s) => `/${s.slug}/`),
     ...(site.features.marking ? ['/chestny-znak/'] : []),

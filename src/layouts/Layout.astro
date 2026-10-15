@@ -12,6 +12,7 @@ const {
   service,
   noindex = false,
   homePage = false,
+  redirectTo,
 } = Astro.props as {
   title: string;
   description: string;
@@ -20,8 +21,9 @@ const {
   service?: string;
   noindex?: boolean;
   homePage?: boolean;
+  redirectTo?: string;
 };
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const canonical = new URL(redirectTo ? url(redirectTo) : Astro.url.pathname, Astro.site).href;
 const home = new URL(url('/'), Astro.site).href;
 const expertId = `${home}#expert`;
 const orgId = `${home}#consulting`;
@@ -42,7 +44,7 @@ const graph: Record<string, unknown>[] = [
           '@id': expertId,
           name: site.name,
           jobTitle: 'Эксперт по сертификации продукции',
-          description: '15 лет профессионального опыта в сфере сертификации продукции',
+          description: 'Более 15 лет профессионального опыта в сфере сертификации продукции',
           url: home,
           sameAs: [site.telegram, site.max].filter(Boolean),
           ...(site.phone ? { telephone: site.phone } : {}),
@@ -93,6 +95,7 @@ const ad = site.accreditation;
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    {redirectTo && <meta http-equiv="refresh" content={`0;url=${url(redirectTo)}`} />}
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f8f4ef" />
     <title>{title}</title>
