@@ -100,6 +100,22 @@ await page.keyboard.press('Escape');
 if (await page.locator('.mobile-menu').evaluate((el) => el.open))
   errors.push('Escape did not close mobile menu');
 await page.goto(origin + '/contacts/');
+if (await page.locator('form, [data-endpoint], [data-sitekey]').count())
+  errors.push('Direct contact page renders form configuration');
+for (const href of [
+  'https://t.me/tatimoss',
+  'https://max.ru/u/f9LHodD0cOJrNl6avAh4zYB-zAGCOj_V69tBsxc_OzpZVAxGaD9QL6UBscY',
+  'mailto:tatyana.moiseenk@mail.ru',
+  'tel:+79185521213',
+]) {
+  if (
+    !(await page
+      .locator('.direct-contact-actions a')
+      .evaluateAll((links, href) => links.some((link) => link.getAttribute('href') === href), href))
+  )
+    errors.push('Missing direct contact link: ' + href);
+}
+await page.goto(origin + '/');
 if (!(await page.locator('button[type=submit]').isDisabled()))
   errors.push('Default form is not disabled');
 if (await page.locator('input[name=consent]').isChecked()) errors.push('Prechecked consent');
@@ -142,7 +158,7 @@ await page.route('https://smartcaptcha.cloud.yandex.ru/**', (route) =>
     body: `window.qaEvents={};window.smartCaptcha={render(el,opts){const frame=document.createElement('iframe');frame.title='Проверка защиты (имитация QA)';frame.style.width='100%';frame.height=100;frame.style.border='0';el.append(frame);window.qaSmartCaptchaOptions=opts;window.qaToken='mock-token';setTimeout(()=>opts.callback(window.qaToken),0);return 0},getResponse(){return window.qaToken},subscribe(id,event,callback){window.qaEvents[event]=callback;return ()=>{}},reset(){window.qaToken='';window.qaSmartCaptchaOptions.callback('');setTimeout(()=>{window.qaToken='mock-token';window.qaSmartCaptchaOptions.callback(window.qaToken)},100)}};window.tmCertSmartCaptchaLoaded();`,
   }),
 );
-await page.route('**/contacts/?qa=enabled', async (route) => {
+await page.route('**/?qa=enabled', async (route) => {
   const response = await route.fetch();
   let html = await response.text();
   html = html
@@ -173,7 +189,7 @@ await page.route('https://api.example.invalid/', async (route) => {
     body: JSON.stringify({ ok: mode === 'success', requestId: payload.requestId }),
   });
 });
-await page.goto(origin + '/contacts/?qa=enabled');
+await page.goto(origin + '/?qa=enabled');
 await page.waitForFunction(() => window.qaSmartCaptchaOptions);
 if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth))
   errors.push('Active form mobile overflow');
@@ -243,7 +259,7 @@ if (!(await page.locator('button[type=submit]').isDisabled()))
   errors.push('Critical CAPTCHA error allowed recovery without reload');
 await page.unroute('https://smartcaptcha.cloud.yandex.ru/**');
 await page.route('https://smartcaptcha.cloud.yandex.ru/**', (route) => route.abort());
-await page.goto(origin + '/contacts/?qa=enabled');
+await page.goto(origin + '/?qa=enabled');
 await page.getByRole('status').filter({ hasText: 'Не удалось отправить вопрос' }).waitFor();
 if (!(await page.locator('button[type=submit]').isDisabled()))
   errors.push('Script load failure enabled submit');

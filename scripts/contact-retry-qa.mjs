@@ -17,7 +17,7 @@ try {
       body: `window.smartCaptcha={render(el,opts){setTimeout(()=>opts.callback('mock-token'),0);return 0},subscribe(){return ()=>{}},getResponse(){return 'mock-token'},reset(){}};window.tmCertSmartCaptchaLoaded();`,
     }),
   );
-  await page.route('**/contacts/?qa=retry', async (r) => {
+  await page.route('**/?qa=retry', async (r) => {
     const response = await r.fetch();
     const html = (await response.text())
       .replace(/data-endpoint(?:="")?(?=\s)/, 'data-endpoint="https://api.example.invalid/"')
@@ -41,7 +41,7 @@ try {
       .catch(() => {});
   });
   const fill = async () => {
-    await page.goto(origin + '/contacts/?qa=retry');
+    await page.goto(origin + '/?qa=retry');
     for (const [name, value] of Object.entries({
       name: 'QA Retry',
       contact: '@qa_retry',
