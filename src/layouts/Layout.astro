@@ -11,6 +11,7 @@ const {
   faq = [],
   service,
   noindex = false,
+  noindexFollow = false,
   homePage = false,
   redirectTo,
 } = Astro.props as {
@@ -20,23 +21,14 @@ const {
   faq?: FAQ[];
   service?: string;
   noindex?: boolean;
+  noindexFollow?: boolean;
   homePage?: boolean;
   redirectTo?: string;
 };
 const canonical = new URL(redirectTo ? url(redirectTo) : Astro.url.pathname, Astro.site).href;
 const home = new URL(url('/'), Astro.site).href;
 const expertId = `${home}#expert`;
-const orgId = `${home}#consulting`;
 const graph: Record<string, unknown>[] = [
-  {
-    '@type': 'ProfessionalService',
-    '@id': orgId,
-    name: site.brand,
-    url: home,
-    description: 'Консультации и экспертное сопровождение процедур в сфере сертификации продукции',
-    ...(site.phone ? { telephone: site.phone } : {}),
-    ...(site.name ? { founder: { '@id': expertId } } : {}),
-  },
   ...(site.name
     ? [
         {
@@ -56,7 +48,7 @@ const graph: Record<string, unknown>[] = [
         {
           '@type': 'Service',
           name: service,
-          provider: { '@id': site.name ? expertId : orgId },
+          provider: { '@id': expertId },
           url: canonical,
           serviceType: 'Экспертное сопровождение и консультация',
         },
@@ -100,7 +92,12 @@ const ad = site.accreditation;
     <meta name="theme-color" content="#f8f4ef" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="robots" content={!live || noindex ? 'noindex, nofollow' : 'index, follow'} />
+    <meta
+      name="robots"
+      content={
+        noindexFollow ? 'noindex, follow' : !live || noindex ? 'noindex, nofollow' : 'index, follow'
+      }
+    />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
     <meta property="og:type" content="website" />

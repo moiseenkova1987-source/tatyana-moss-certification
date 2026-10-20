@@ -48,86 +48,100 @@ const enabled =
       )}
     </p>
   </div>
-  <form
-    data-lead-form
-    data-endpoint={enabled ? endpoint : ''}
-    data-sitekey={enabled ? sitekey : ''}
-    aria-label="Предварительный вопрос по вашему товару"
-  >
-    <div class="form-grid">
-      <label class="field">
-        Имя *
+  {enabled ? (
+    <form
+      data-lead-form
+      data-endpoint={enabled ? endpoint : ''}
+      data-sitekey={enabled ? sitekey : ''}
+      aria-label="Предварительный вопрос по вашему товару"
+    >
+      <div class="form-grid">
+        <label class="field">
+          Имя *
+          <input
+            name="name"
+            autocomplete="name"
+            required
+            maxlength="100"
+            placeholder="Как к вам обращаться"
+          />
+        </label>
+        <label class="field">
+          Телефон или Telegram *
+          <input
+            name="contact"
+            autocomplete="tel"
+            required
+            minlength="3"
+            maxlength="100"
+            placeholder="+7 или @username"
+          />
+        </label>
+        <label class="field wide">
+          Товар / категория *
+          <input
+            name="productName"
+            required
+            maxlength="200"
+            placeholder="Что планируете продавать"
+          />
+        </label>
+        <label class="field wide">
+          Ваш вопрос *
+          <textarea
+            name="message"
+            rows="3"
+            required
+            maxlength="1500"
+            placeholder="Какая задача стоит перед вами?"
+          ></textarea>
+        </label>
+      </div>
+      <div hidden aria-hidden="true">
         <input
-          name="name"
-          autocomplete="name"
-          required
-          maxlength="100"
-          placeholder="Как к вам обращаться"
+          name="website"
+          tabindex="-1"
+          autocomplete="off"
+          maxlength="200"
+          aria-label="Оставьте пустым"
         />
+      </div>
+      <div data-smartcaptcha></div>
+      <label class="consent">
+        <input type="checkbox" name="consent" required value="accepted" />
+        <span>
+          Я даю{' '}
+          <a href={url('/personal-data-consent/')}>согласие на обработку персональных данных</a> и
+          подтверждаю, что ознакомлен(а) с{' '}
+          <a href={url('/privacy/')}>Политикой обработки персональных данных</a>.
+        </span>
       </label>
-      <label class="field">
-        Телефон или Telegram *
-        <input
-          name="contact"
-          autocomplete="tel"
-          required
-          minlength="3"
-          maxlength="100"
-          placeholder="+7 или @username"
-        />
-      </label>
-      <label class="field wide">
-        Товар / категория *
-        <input name="productName" required maxlength="200" placeholder="Что планируете продавать" />
-      </label>
-      <label class="field wide">
-        Ваш вопрос *
-        <textarea
-          name="message"
-          rows="3"
-          required
-          maxlength="1500"
-          placeholder="Какая задача стоит перед вами?"
-        ></textarea>
-      </label>
-    </div>
-    <div hidden aria-hidden="true">
-      <input
-        name="website"
-        tabindex="-1"
-        autocomplete="off"
-        maxlength="200"
-        aria-label="Оставьте пустым"
-      />
-    </div>
-    <div data-smartcaptcha></div>
-    <label class="consent">
-      <input type="checkbox" name="consent" required value="accepted" />
-      <span>
-        Я даю <a href={url('/personal-data-consent/')}>согласие на обработку персональных данных</a>{' '}
-        и подтверждаю, что ознакомлен(а) с{' '}
-        <a href={url('/privacy/')}>Политикой обработки персональных данных</a>.
-      </span>
-    </label>
-    <div class="form-footer">
-      <button class="button" type="submit" disabled>
-        Отправить вопрос <span aria-hidden="true">↗</span>
-      </button>
-      <p class="form-hint">* Обязательные поля. Не отправляйте паспортные и платежные данные.</p>
-    </div>
-    <p class="form-hint">
-      Форма предназначена для предварительного обращения и запроса консультации. Отправка формы не
-      является оформлением заказа, заключением договора или оплатой услуги. Для защиты от
-      автоматических запросов используется Yandex SmartCaptcha.
-    </p>
-    <p class="form-status" role="status" aria-live="polite" tabindex="-1"></p>
-    <noscript>
-      <p class="form-notice">
-        Для отправки формы требуется JavaScript. Используйте опубликованные контакты для прямого
-        обращения.
+      <div class="form-footer">
+        <button class="button" type="submit" disabled>
+          Отправить вопрос <span aria-hidden="true">↗</span>
+        </button>
+        <p class="form-hint">* Обязательные поля. Не отправляйте паспортные и платежные данные.</p>
+      </div>
+      <p class="form-hint">
+        Форма предназначена для предварительного обращения и запроса консультации. Отправка формы не
+        является оформлением заказа, заключением договора или оплатой услуги. Для защиты от
+        автоматических запросов используется Yandex SmartCaptcha.
       </p>
-    </noscript>
-  </form>
+      <p class="form-status" role="status" aria-live="polite" tabindex="-1"></p>
+      <noscript>
+        <p class="form-notice">
+          Для отправки формы требуется JavaScript. Используйте опубликованные контакты для прямого
+          обращения.
+        </p>
+      </noscript>
+    </form>
+  ) : (
+    <div>
+      <a class="button" href={url('/contacts/')}>
+        Выбрать способ связи ↗
+      </a>
+    </div>
+  )}
 </section>
 <script>
   import { initContactForm } from '../scripts/contact-form';

@@ -19,10 +19,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # Custom-domain build. Keep indexing disabled until separately approved.
+      # Custom-domain build. Public indexing approved after launch checks.
       PUBLIC_SITE_URL: https://tm-cert.ru
       PUBLIC_BASE_PATH: /
-      PUBLIC_SITE_LIVE: 'false'
+      PUBLIC_SITE_LIVE: 'true'
       # Activation requires a separate approved change; preparing keys alone does not enable it.
       PUBLIC_CONTACT_FORM_ENABLED: ${{ vars.PUBLIC_CONTACT_FORM_ENABLED || 'false' }}
       PUBLIC_CONTACT_API_URL: ${{ vars.PUBLIC_CONTACT_API_URL }}

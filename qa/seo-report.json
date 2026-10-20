@@ -42,7 +42,7 @@
     },
     {
       "page": "import-iz-kitaya\\index.html",
-      "title": "Официальный импорт из Китая — экспертное сопровождение | Татьяна Моисеенкова",
+      "title": "Консультация и подготовка товара к официальному импорту из Китая | Татьяна Моисеенкова",
       "description": "Консультация профильного специалиста по белому ввозу из Китая. Связь ТН ВЭД, разрешительных документов, маркировки, образцов и официального импорта.",
       "h1": "Официальный / белый ввоз товаров из Китая",
       "canonical": "https://tm-cert.ru/import-iz-kitaya/",
@@ -134,8 +134,6 @@
     "https://tm-cert.ru/services/",
     "https://tm-cert.ru/about/",
     "https://tm-cert.ru/contacts/",
-    "https://tm-cert.ru/privacy/",
-    "https://tm-cert.ru/personal-data-consent/",
     "https://tm-cert.ru/proverka-tovara/",
     "https://tm-cert.ru/deklaraciya-sootvetstviya/",
     "https://tm-cert.ru/sertifikaciya-produkcii/",
@@ -144,6 +142,6 @@
     "https://tm-cert.ru/marketplaces/",
     "https://tm-cert.ru/import-iz-kitaya/"
   ],
-  "robots": "User-agent: *\nDisallow: /\n\nSitemap: https://tm-cert.ru/sitemap.xml\n",
+  "robots": "User-agent: *\nAllow: /\n\nSitemap: https://tm-cert.ru/sitemap.xml\n",
   "errors": []
 }

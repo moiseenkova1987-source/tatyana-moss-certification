@@ -448,18 +448,19 @@
     }
   ],
   "form": {
-    "defaultDisabled": true,
+    "defaultNotRendered": true,
+    "mockChecksRun": false,
     "noDisabledExternalRequests": true,
-    "consentRequired": true,
-    "requiredFieldsAndQuestionValidated": true,
-    "tokenRequired": true,
-    "captchaExpiryAndErrorsBlocked": true,
-    "captchaScriptFailureBlocked": true,
-    "exactYandexContract": true,
-    "doubleClickBlocked": true,
-    "resultFocused": true,
-    "mobileAnd200Percent": true,
-    "successAndErrorMocked": true
+    "consentRequired": false,
+    "requiredFieldsAndQuestionValidated": false,
+    "tokenRequired": false,
+    "captchaExpiryAndErrorsBlocked": false,
+    "captchaScriptFailureBlocked": false,
+    "exactYandexContract": false,
+    "doubleClickBlocked": false,
+    "resultFocused": false,
+    "mobileAnd200Percent": false,
+    "successAndErrorMocked": false
   },
   "errors": []
 }

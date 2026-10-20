@@ -18,10 +18,12 @@ try {
     }),
   );
   await page.route('**/?qa=retry', async (r) => {
-    const response = await r.fetch();
+    const response = await r.fetch(
+      process.env.QA_FORM_URL ? { url: process.env.QA_FORM_URL + '/' } : undefined,
+    );
     const html = (await response.text())
-      .replace(/data-endpoint(?:="")?(?=\s)/, 'data-endpoint="https://api.example.invalid/"')
-      .replace(/data-sitekey(?:="")?(?=\s)/, 'data-sitekey="test-key"');
+      .replace(/data-endpoint(?:="[^"]*")?(?=\s)/, 'data-endpoint="https://api.example.invalid/"')
+      .replace(/data-sitekey(?:="[^"]*")?(?=\s)/, 'data-sitekey="test-key"');
     await r.fulfill({ response, body: html });
   });
   await page.route('https://api.example.invalid/', async (r) => {

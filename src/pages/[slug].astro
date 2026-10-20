@@ -14,7 +14,8 @@ const isCheck = s.slug === 'proverka-tovara';
 
 <Layout
   title={
-    s.seoTitle ?? `${s.title} — ${isCheck ? '1 500 ₽' : 'экспертное сопровождение'} | Татьяна Моисеенкова`
+    s.seoTitle ??
+    `${s.title} — ${isCheck ? '1 500 ₽' : 'экспертное сопровождение'} | Татьяна Моисеенкова`
   }
   description={s.description}
   crumbs={[
@@ -22,7 +23,7 @@ const isCheck = s.slug === 'proverka-tovara';
     { name: s.title, path: `/${s.slug}/` },
   ]}
   faq={s.faq}
-  service={s.h1}
+  service={s.schemaName ?? s.h1}
 >
   <section class="page-hero">
     <p class="eyebrow">{s.label}</p>

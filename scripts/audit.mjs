@@ -20,6 +20,7 @@ const errors = [],
 const check = (condition, message) => {
   if (!condition) errors.push(message);
 };
+const legalPaths = ['/privacy/', '/personal-data-consent/'];
 const pages = new Map();
 for (const file of html) {
   const $ = load(await readFile(file, 'utf8'));
@@ -42,12 +43,18 @@ for (const file of html) {
     title = $('title').text(),
     desc = $('meta[name=description]').attr('content');
   check($('h1').length === 1, `${name}: требуется один H1`);
-  if (process.env.PUBLIC_SITE_LIVE !== 'true')
+  if (
+    legalPaths.includes(new URL($('link[rel=canonical]').attr('href')).pathname) &&
+    !$('meta[http-equiv=refresh]').length
+  )
+    check($('meta[name=robots]').attr('content') === 'noindex, follow', `${name}: legal robots`);
+  else if (process.env.PUBLIC_SITE_LIVE !== 'true')
     check(
       $('meta[name=robots]').attr('content') === 'noindex, nofollow',
       `${name}: индексация должна быть выключена`,
     );
   if (process.env.PUBLIC_CONTACT_FORM_ENABLED !== 'true') {
+    check($('form').length === 0, `${name}: выключенная форма не должна рендериться`);
     for (const form of $('[data-lead-form]').toArray()) {
       check(
         !$(form).attr('data-endpoint') && !$(form).attr('data-sitekey'),
@@ -76,7 +83,15 @@ for (const file of html) {
     `${name}: Person отсутствует`,
   );
   check(
-    !graph.some((x) => ['Review', 'AggregateRating'].includes(x['@type'])),
+    !graph.some((x) =>
+      [
+        'Review',
+        'AggregateRating',
+        'Organization',
+        'LocalBusiness',
+        'ProfessionalService',
+      ].includes(x['@type']),
+    ),
     `${name}: отзывы в schema`,
   );
   const faq = graph.find((x) => x['@type'] === 'FAQPage');
@@ -126,7 +141,7 @@ const sitemap = xml('loc')
   .map((e) => xml(e).text());
 const redirects = { '/consent/': '/personal-data-consent/', '/privacy-policy/': '/privacy/' };
 check(
-  sitemap.length === html.length - 1 - Object.keys(redirects).length,
+  sitemap.length === html.length - 1 - Object.keys(redirects).length - legalPaths.length,
   'sitemap: количество страниц',
 );
 for (const [oldPath, target] of Object.entries(redirects)) {
@@ -151,12 +166,31 @@ for (const [oldPath, target] of Object.entries(redirects)) {
     `sitemap: старый URL ${oldPath}`,
   );
 }
-for (const loc of sitemap) check(pages.has(new URL(loc).pathname), `sitemap: отсутствует ${loc}`);
+for (const loc of sitemap) {
+  const p = new URL(loc).pathname;
+  check(pages.has(p), `sitemap: отсутствует ${loc}`);
+  check(!legalPaths.includes(p), `sitemap: legal ${loc}`);
+  check(loc.startsWith('https://tm-cert.ru/'), `canonical origin: ${loc}`);
+  if (process.env.PUBLIC_SITE_LIVE === 'true')
+    check(
+      pages.get(p)?.$('meta[name=robots]').attr('content') === 'index, follow',
+      `live robots: ${loc}`,
+    );
+}
+check(
+  pages.get('/404/')?.$('meta[name=robots]').attr('content') === 'noindex, nofollow',
+  '404 robots',
+);
 check(!sitemap.some((x) => /404/.test(x)), 'sitemap содержит страницу 404');
 const robots = await readFile(path.join(root, 'robots.txt'), 'utf8');
 check(robots.includes('Sitemap: ') && robots.includes('/sitemap.xml'), 'robots: нет sitemap');
 if (process.env.PUBLIC_SITE_LIVE !== 'true')
   check(robots.includes('Disallow: /'), 'robots: индексация должна быть запрещена');
+else
+  check(
+    robots.includes('Allow: /') && !robots.includes('Disallow: /'),
+    'robots: обход должен быть разрешён',
+  );
 await mkdir('qa', { recursive: true });
 await writeFile(
   'qa/seo-report.json',

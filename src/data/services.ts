@@ -3,6 +3,7 @@ export type Service = {
   slug: string;
   title: string;
   seoTitle?: string;
+  schemaName?: string;
   short: string;
   description: string;
   h1: string;
@@ -308,6 +309,10 @@ export const services: Service[] = [
   },
   {
     slug: 'import-iz-kitaya',
+    seoTitle:
+      'Консультация и подготовка товара к официальному импорту из Китая | Татьяна Моисеенкова',
+    schemaName:
+      'Экспертная консультация по требованиям к товару и его подготовке к официальному импорту из Китая',
     title: 'Официальный импорт из Китая',
     short: 'Консультация профильного специалиста по официальному импорту товаров из Китая.',
     description:

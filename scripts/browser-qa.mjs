@@ -116,26 +116,12 @@ for (const href of [
     errors.push('Missing direct contact link: ' + href);
 }
 await page.goto(origin + '/');
-if (!(await page.locator('button[type=submit]').isDisabled()))
-  errors.push('Default form is not disabled');
-if (await page.locator('input[name=consent]').isChecked()) errors.push('Prechecked consent');
-if (!((await page.locator('input[name=consent]').getAttribute('required')) !== null))
-  errors.push('Consent not required');
-for (const selector of ['.consent', '.footer-bottom']) {
-  for (const path of ['/privacy/', '/personal-data-consent/']) {
-    const link = page.locator(selector + ' a[href="' + path + '"]');
-    if ((await link.count()) !== 1) errors.push('Missing legal link: ' + selector + path);
-  }
+if (await page.locator('form, [data-endpoint], [data-sitekey]').count())
+  errors.push('Disabled form must not be rendered');
+for (const path of ['/privacy/', '/personal-data-consent/']) {
+  if ((await page.locator('.footer-bottom a[href="' + path + '"]').count()) !== 1)
+    errors.push('Missing footer legal link: ' + path);
 }
-await page.locator('.consent a').first().focus();
-await page.keyboard.press('Tab');
-if (
-  !(await page
-    .locator('.consent a')
-    .nth(1)
-    .evaluate((el) => el === document.activeElement))
-)
-  errors.push('Legal links keyboard navigation failed');
 await page.reload();
 await page.keyboard.press('Tab');
 if (!(await page.locator('.skip-link').evaluate((el) => el === document.activeElement)))
@@ -152,118 +138,124 @@ if (
 // Exercise the production client using local HTML and mocked SmartCaptcha/API only.
 let mode = 'success',
   calls = 0;
-await page.route('https://smartcaptcha.cloud.yandex.ru/**', (route) =>
-  route.fulfill({
-    contentType: 'application/javascript',
-    body: `window.qaEvents={};window.smartCaptcha={render(el,opts){const frame=document.createElement('iframe');frame.title='Проверка защиты (имитация QA)';frame.style.width='100%';frame.height=100;frame.style.border='0';el.append(frame);window.qaSmartCaptchaOptions=opts;window.qaToken='mock-token';setTimeout(()=>opts.callback(window.qaToken),0);return 0},getResponse(){return window.qaToken},subscribe(id,event,callback){window.qaEvents[event]=callback;return ()=>{}},reset(){window.qaToken='';window.qaSmartCaptchaOptions.callback('');setTimeout(()=>{window.qaToken='mock-token';window.qaSmartCaptchaOptions.callback(window.qaToken)},100)}};window.tmCertSmartCaptchaLoaded();`,
-  }),
-);
-await page.route('**/?qa=enabled', async (route) => {
-  const response = await route.fetch();
-  let html = await response.text();
-  html = html
-    .replace(/data-endpoint(?:="")?(?=\s)/, 'data-endpoint="https://api.example.invalid/"')
-    .replace(/data-sitekey(?:="")?(?=\s)/, 'data-sitekey="test-public-key"');
-  await route.fulfill({ response, body: html });
-});
-await page.route('https://api.example.invalid/', async (route) => {
-  calls++;
-  const payload = route.request().postDataJSON();
-  if (
-    payload.consent !== true ||
-    payload.captchaToken !== 'mock-token' ||
-    !payload.productName ||
-    !payload.message ||
-    'email' in payload ||
-    'productUrl' in payload ||
-    Object.keys(payload).sort().join(',') !==
-      'captchaToken,consent,contact,message,name,productName,requestId,website' ||
-    !/^[0-9a-f-]{36}$/.test(payload.requestId) ||
-    route.request().headers()['content-type'] !== 'application/json'
-  )
-    errors.push('Wrong frontend protocol');
-  await new Promise((resolve) => setTimeout(resolve, 250));
-  await route.fulfill({
-    status: mode === 'success' ? 200 : 502,
-    contentType: 'application/json',
-    body: JSON.stringify({ ok: mode === 'success', requestId: payload.requestId }),
-  });
-});
-await page.goto(origin + '/?qa=enabled');
-await page.waitForFunction(() => window.qaSmartCaptchaOptions);
-if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth))
-  errors.push('Active form mobile overflow');
-await page.evaluate(() => (document.documentElement.style.fontSize = '200%'));
-if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth))
-  errors.push('Active form 200% overflow');
-await page.evaluate(() => (document.documentElement.style.fontSize = ''));
-async function fill() {
-  for (const [name, value] of Object.entries({
-    name: 'QA Test',
-    contact: '@qa_test',
-    message: 'Предварительный вопрос QA',
-    productName: 'QA товар',
-  }))
-    await page.locator(`[name=${name}]`).fill(value);
-}
-await page.locator('button[type=submit]').click();
-if (calls) errors.push('Empty form submitted');
-await fill();
-await page.locator('[name=message]').fill('   ');
-await page.locator('button[type=submit]').click();
-if (calls) errors.push('Empty question submitted');
-await page.locator('[name=message]').fill('Предварительный вопрос QA');
-await page.locator('button[type=submit]').click();
-if (calls) errors.push('Submitted without consent');
-await page.locator('[name=consent]').check();
-if (await page.locator('[name=email], [name=productUrl]').count())
-  errors.push('Removed fields still present');
-await page.evaluate(() => (window.qaToken = ''));
-await page.locator('button[type=submit]').click();
-await page.getByRole('status').filter({ hasText: 'Пройдите проверку' }).waitFor();
-if (calls) errors.push('Submitted without token');
-await page.evaluate(() => (window.qaToken = 'mock-token'));
-await page.locator('button[type=submit]').click();
-await page.evaluate(() => {
-  document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
-});
-await page.getByRole('status').filter({ hasText: 'Вопрос отправлен' }).waitFor();
-if (calls !== 1) errors.push('Double submission not prevented');
-if ((await page.locator('[name=name]').inputValue()) !== '')
-  errors.push('Success did not reset form');
-await page.waitForTimeout(150);
-mode = 'error';
-await fill();
-await page.locator('[name=consent]').check();
-await page.locator('button[type=submit]').click();
-await page
-  .getByRole('status')
-  .filter({ hasText: 'Не удалось подтвердить получение вопроса' })
-  .waitFor();
-if ((await page.locator('[name=name]').inputValue()) !== 'QA Test') errors.push('Error lost input');
-if (!(await page.getByRole('status').evaluate((el) => el === document.activeElement)))
-  errors.push('Result not focused');
-await page.screenshot({ path: 'qa/screenshots/contact-form-active-mock-390.png', fullPage: true });
-await page.waitForTimeout(150);
-for (const event of ['token-expired', 'network-error', 'javascript-error']) {
-  await page.evaluate((event) => window.qaEvents[event](), event);
-  if (!(await page.locator('button[type=submit]').isDisabled()))
-    errors.push(event + ' did not disable submit');
-  await page.evaluate(() =>
-    document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true })),
+const formChecksRun = !!process.env.QA_FORM_URL;
+if (formChecksRun) {
+  await page.route('https://smartcaptcha.cloud.yandex.ru/**', (route) =>
+    route.fulfill({
+      contentType: 'application/javascript',
+      body: `window.qaEvents={};window.smartCaptcha={render(el,opts){const frame=document.createElement('iframe');frame.title='Проверка защиты (имитация QA)';frame.style.width='100%';frame.height=100;frame.style.border='0';el.append(frame);window.qaSmartCaptchaOptions=opts;window.qaToken='mock-token';setTimeout(()=>opts.callback(window.qaToken),0);return 0},getResponse(){return window.qaToken},subscribe(id,event,callback){window.qaEvents[event]=callback;return ()=>{}},reset(){window.qaToken='';window.qaSmartCaptchaOptions.callback('');setTimeout(()=>{window.qaToken='mock-token';window.qaSmartCaptchaOptions.callback(window.qaToken)},100)}};window.tmCertSmartCaptchaLoaded();`,
+    }),
   );
-  if (calls !== 2) errors.push(event + ' allowed submission');
-  await page.evaluate(() => window.qaSmartCaptchaOptions.callback('mock-token'));
+  await page.route('**/?qa=enabled', async (route) => {
+    const response = await route.fetch({ url: process.env.QA_FORM_URL + '/' });
+    let html = await response.text();
+    html = html
+      .replace(/data-endpoint(?:="[^"]*")?(?=\s)/, 'data-endpoint="https://api.example.invalid/"')
+      .replace(/data-sitekey(?:="[^"]*")?(?=\s)/, 'data-sitekey="test-public-key"');
+    await route.fulfill({ response, body: html });
+  });
+  await page.route('https://api.example.invalid/', async (route) => {
+    calls++;
+    const payload = route.request().postDataJSON();
+    if (
+      payload.consent !== true ||
+      payload.captchaToken !== 'mock-token' ||
+      !payload.productName ||
+      !payload.message ||
+      'email' in payload ||
+      'productUrl' in payload ||
+      Object.keys(payload).sort().join(',') !==
+        'captchaToken,consent,contact,message,name,productName,requestId,website' ||
+      !/^[0-9a-f-]{36}$/.test(payload.requestId) ||
+      route.request().headers()['content-type'] !== 'application/json'
+    )
+      errors.push('Wrong frontend protocol');
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    await route.fulfill({
+      status: mode === 'success' ? 200 : 502,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: mode === 'success', requestId: payload.requestId }),
+    });
+  });
+  await page.goto(origin + '/?qa=enabled');
+  await page.waitForFunction(() => window.qaSmartCaptchaOptions);
+  if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth))
+    errors.push('Active form mobile overflow');
+  await page.evaluate(() => (document.documentElement.style.fontSize = '200%'));
+  if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth))
+    errors.push('Active form 200% overflow');
+  await page.evaluate(() => (document.documentElement.style.fontSize = ''));
+  async function fill() {
+    for (const [name, value] of Object.entries({
+      name: 'QA Test',
+      contact: '@qa_test',
+      message: 'Предварительный вопрос QA',
+      productName: 'QA товар',
+    }))
+      await page.locator(`[name=${name}]`).fill(value);
+  }
+  await page.locator('button[type=submit]').click();
+  if (calls) errors.push('Empty form submitted');
+  await fill();
+  await page.locator('[name=message]').fill('   ');
+  await page.locator('button[type=submit]').click();
+  if (calls) errors.push('Empty question submitted');
+  await page.locator('[name=message]').fill('Предварительный вопрос QA');
+  await page.locator('button[type=submit]').click();
+  if (calls) errors.push('Submitted without consent');
+  await page.locator('[name=consent]').check();
+  if (await page.locator('[name=email], [name=productUrl]').count())
+    errors.push('Removed fields still present');
+  await page.evaluate(() => (window.qaToken = ''));
+  await page.locator('button[type=submit]').click();
+  await page.getByRole('status').filter({ hasText: 'Пройдите проверку' }).waitFor();
+  if (calls) errors.push('Submitted without token');
+  await page.evaluate(() => (window.qaToken = 'mock-token'));
+  await page.locator('button[type=submit]').click();
+  await page.evaluate(() => {
+    document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
+  });
+  await page.getByRole('status').filter({ hasText: 'Вопрос отправлен' }).waitFor();
+  if (calls !== 1) errors.push('Double submission not prevented');
+  if ((await page.locator('[name=name]').inputValue()) !== '')
+    errors.push('Success did not reset form');
+  await page.waitForTimeout(150);
+  mode = 'error';
+  await fill();
+  await page.locator('[name=consent]').check();
+  await page.locator('button[type=submit]').click();
+  await page
+    .getByRole('status')
+    .filter({ hasText: 'Не удалось подтвердить получение вопроса' })
+    .waitFor();
+  if ((await page.locator('[name=name]').inputValue()) !== 'QA Test')
+    errors.push('Error lost input');
+  if (!(await page.getByRole('status').evaluate((el) => el === document.activeElement)))
+    errors.push('Result not focused');
+  await page.screenshot({
+    path: 'qa/screenshots/contact-form-active-mock-390.png',
+    fullPage: true,
+  });
+  await page.waitForTimeout(150);
+  for (const event of ['token-expired', 'network-error', 'javascript-error']) {
+    await page.evaluate((event) => window.qaEvents[event](), event);
+    if (!(await page.locator('button[type=submit]').isDisabled()))
+      errors.push(event + ' did not disable submit');
+    await page.evaluate(() =>
+      document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true })),
+    );
+    if (calls !== 2) errors.push(event + ' allowed submission');
+    await page.evaluate(() => window.qaSmartCaptchaOptions.callback('mock-token'));
+  }
+  if (!(await page.locator('button[type=submit]').isDisabled()))
+    errors.push('Critical CAPTCHA error allowed recovery without reload');
+  await page.unroute('https://smartcaptcha.cloud.yandex.ru/**');
+  await page.route('https://smartcaptcha.cloud.yandex.ru/**', (route) => route.abort());
+  await page.goto(origin + '/?qa=enabled');
+  await page.getByRole('status').filter({ hasText: 'Не удалось отправить вопрос' }).waitFor();
+  if (!(await page.locator('button[type=submit]').isDisabled()))
+    errors.push('Script load failure enabled submit');
 }
-if (!(await page.locator('button[type=submit]').isDisabled()))
-  errors.push('Critical CAPTCHA error allowed recovery without reload');
-await page.unroute('https://smartcaptcha.cloud.yandex.ru/**');
-await page.route('https://smartcaptcha.cloud.yandex.ru/**', (route) => route.abort());
-await page.goto(origin + '/?qa=enabled');
-await page.getByRole('status').filter({ hasText: 'Не удалось отправить вопрос' }).waitFor();
-if (!(await page.locator('button[type=submit]').isDisabled()))
-  errors.push('Script load failure enabled submit');
-
 const nojs = await browser.newPage({
   javaScriptEnabled: false,
   viewport: { width: 390, height: 844 },
@@ -284,18 +276,19 @@ await writeFile(
       results,
       zoomResults,
       form: {
-        defaultDisabled: true,
+        defaultNotRendered: true,
+        mockChecksRun: formChecksRun,
         noDisabledExternalRequests: true,
-        consentRequired: true,
-        requiredFieldsAndQuestionValidated: true,
-        tokenRequired: true,
-        captchaExpiryAndErrorsBlocked: true,
-        captchaScriptFailureBlocked: true,
-        exactYandexContract: true,
-        doubleClickBlocked: true,
-        resultFocused: true,
-        mobileAnd200Percent: true,
-        successAndErrorMocked: true,
+        consentRequired: formChecksRun,
+        requiredFieldsAndQuestionValidated: formChecksRun,
+        tokenRequired: formChecksRun,
+        captchaExpiryAndErrorsBlocked: formChecksRun,
+        captchaScriptFailureBlocked: formChecksRun,
+        exactYandexContract: formChecksRun,
+        doubleClickBlocked: formChecksRun,
+        resultFocused: formChecksRun,
+        mobileAnd200Percent: formChecksRun,
+        successAndErrorMocked: formChecksRun,
       },
       errors,
     },
