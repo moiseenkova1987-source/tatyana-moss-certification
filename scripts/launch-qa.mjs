@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { load } from 'cheerio';
 import { pathToFileURL } from 'node:url';
 const { chromium } = await import(
   process.env.PLAYWRIGHT_MODULE ? pathToFileURL(process.env.PLAYWRIGHT_MODULE).href : 'playwright'
@@ -16,6 +17,8 @@ const paths = [
   '/marketplaces/',
   '/about/',
   '/contacts/',
+  '/practice/',
+  '/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/',
 ];
 const legal = ['/privacy/', '/personal-data-consent/'];
 const old = { '/consent/': '/personal-data-consent/', '/privacy-policy/': '/privacy/' };
@@ -44,6 +47,30 @@ try {
     const r = await context.request.get(base + path, { maxRetries: 3 });
     assert.equal(r.status(), 200);
     const html = await r.text();
+    if (path === '/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/') {
+      const $ = load(html);
+      const graph = JSON.parse($('script[type="application/ld+json"]').text())['@graph'];
+      const article = graph.find((item) => item['@type'] === 'Article');
+      assert.equal(article.headline, $('h1').text().trim());
+      assert.equal(article.url, 'https://tm-cert.ru' + path);
+      assert.equal(article.mainEntityOfPage['@id'], article.url);
+      assert(
+        graph.some((item) => item['@type'] === 'Person' && item['@id'] === article.author['@id']),
+      );
+      assert.equal(
+        graph.find((item) => item['@type'] === 'BreadcrumbList').itemListElement.length,
+        3,
+      );
+      const faq = graph.find((item) => item['@type'] === 'FAQPage');
+      assert.equal(faq.mainEntity.length, 5);
+      assert.equal($('.faq details').length, 5);
+      for (const item of faq.mainEntity) {
+        assert($('.faq').text().includes(item.name));
+        assert($('.faq').text().includes(item.acceptedAnswer.text));
+      }
+      assert.equal(article.datePublished, '2026-10-21');
+      assert.equal(article.dateModified, '2026-10-21');
+    }
     const expected = paths.includes(path)
       ? 'index, follow'
       : legal.includes(path)
@@ -62,7 +89,7 @@ try {
     assert(!/localhost|github\.io|tatyana-moss-certification\//.test(html), path + ' old URL');
     if (old[path]) assert(html.includes('0;url=' + old[path]));
   }
-  for (const width of [390, 1440]) {
+  for (const width of [360, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     for (const path of paths) {
       await page.goto(base + path, { waitUntil: 'networkidle' });
@@ -85,9 +112,9 @@ try {
     JSON.stringify({
       base,
       sitemap: urls.length,
-      pages: 16,
-      browserChecks: 22,
-      zoomChecks: 22,
+      pages: paths.length + 5,
+      browserChecks: paths.length * 4,
+      zoomChecks: paths.length * 4,
       noForm: true,
       captchaApiPosts: 0,
       errors: [],

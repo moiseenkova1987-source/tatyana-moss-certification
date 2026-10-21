@@ -95,6 +95,32 @@ for (const file of html) {
     `${name}: отзывы в schema`,
   );
   const faq = graph.find((x) => x['@type'] === 'FAQPage');
+  const article = graph.find((x) => x['@type'] === 'Article');
+  if (article) {
+    check(article.headline === $('h1').text().trim(), `${name}: Article headline`);
+    check(article.description === desc, `${name}: Article description`);
+    check(
+      article.url === canonical && article.mainEntityOfPage?.['@id'] === canonical,
+      `${name}: Article URL`,
+    );
+    check(
+      graph.some((x) => x['@type'] === 'Person' && x['@id'] === article.author?.['@id']),
+      `${name}: Article author`,
+    );
+    check(
+      /^\d{4}-\d{2}-\d{2}$/.test(article.datePublished) &&
+        /^\d{4}-\d{2}-\d{2}$/.test(article.dateModified),
+      `${name}: Article dates`,
+    );
+    check(
+      $(`time[datetime="${article.datePublished}"]`).length > 0,
+      `${name}: Article visible date`,
+    );
+    check(
+      graph.find((x) => x['@type'] === 'BreadcrumbList')?.itemListElement.length === 3,
+      `${name}: Article breadcrumbs`,
+    );
+  }
   if (faq) {
     check(
       faq.mainEntity.length === $('.faq details').length,

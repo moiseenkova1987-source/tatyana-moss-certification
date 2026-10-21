@@ -33,6 +33,7 @@ export const navigation = [
   ['Главная', '/'],
   ['Услуги', '/services/'],
   ['Проверка товара', '/proverka-tovara/'],
+  ['Разборы и практика', '/practice/'],
   ['Обо мне', '/about/'],
   ['Контакты', '/contacts/'],
 ] as const;

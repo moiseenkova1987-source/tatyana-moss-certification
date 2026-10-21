@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { services } from '../data/services';
+import { practiceArticles } from '../data/practice';
 import { articles } from '../data/articles';
 import { site, url } from '../data/site';
 export const GET: APIRoute = ({ site: origin }) => {
@@ -8,6 +9,8 @@ export const GET: APIRoute = ({ site: origin }) => {
     '/services/',
     '/about/',
     '/contacts/',
+    '/practice/',
+    ...practiceArticles.map((a) => `/practice/${a.slug}/`),
     ...services.map((s) => `/${s.slug}/`),
     ...(site.features.marking ? ['/chestny-znak/'] : []),
     ...(site.features.blog

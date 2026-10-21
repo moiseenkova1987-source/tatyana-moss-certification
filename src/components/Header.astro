@@ -3,6 +3,8 @@ import { url, navigation } from '../data/site';
 import Brand from './Brand.astro';
 import Button from './Button.astro';
 const current = Astro.url.pathname;
+const isCurrent = (href: string) =>
+  current === url(href) || (href === '/practice/' && current.startsWith(url(href)));
 ---
 
 <header class="header">
@@ -10,7 +12,7 @@ const current = Astro.url.pathname;
     <Brand />
     <nav class="desktop-nav" aria-label="Основное меню">
       {navigation.map(([label, href]) => (
-        <a href={url(href)} aria-current={current === url(href) ? 'page' : undefined}>
+        <a href={url(href)} aria-current={isCurrent(href) ? 'page' : undefined}>
           {label}
         </a>
       ))}
@@ -25,7 +27,7 @@ const current = Astro.url.pathname;
       </summary>
       <nav aria-label="Мобильное меню">
         {navigation.map(([label, href]) => (
-          <a href={url(href)} aria-current={current === url(href) ? 'page' : undefined}>
+          <a href={url(href)} aria-current={isCurrent(href) ? 'page' : undefined}>
             {label}
           </a>
         ))}
@@ -52,3 +54,19 @@ const current = Astro.url.pathname;
       menu.open = false;
   });
 </script>
+
+<style>
+  @media (min-width: 1051px) and (max-width: 1550px) {
+    .desktop-nav {
+      gap: clamp(0.65rem, 1.1vw, 1.2rem);
+    }
+    .header :global(.brand-name) {
+      font-size: clamp(1.65rem, 2vw, 2.8rem);
+    }
+  }
+  @media (min-width: 1051px) and (max-width: 1350px) {
+    .header :global(.header-cta) {
+      display: none;
+    }
+  }
+</style>

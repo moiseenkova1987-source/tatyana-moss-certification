@@ -68,6 +68,18 @@
     },
     {
       "width": 360,
+      "route": "/practice/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "route": "/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 360,
       "route": "/privacy/",
       "status": 200,
       "overflow": false
@@ -158,6 +170,18 @@
     },
     {
       "width": 390,
+      "route": "/practice/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 390,
       "route": "/privacy/",
       "status": 200,
       "overflow": false
@@ -248,6 +272,18 @@
     },
     {
       "width": 768,
+      "route": "/practice/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "route": "/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 768,
       "route": "/privacy/",
       "status": 200,
       "overflow": false
@@ -333,6 +369,18 @@
     {
       "width": 1440,
       "route": "/contacts/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/practice/",
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/",
       "status": 200,
       "overflow": false
     },
@@ -364,6 +412,18 @@
   "zoomResults": [
     {
       "width": 390,
+      "route": "/practice/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 390,
       "route": "/",
       "textScale": "200%",
       "overflow": false
@@ -401,6 +461,18 @@
     {
       "width": 390,
       "route": "/personal-data-consent/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/practice/",
+      "textScale": "200%",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/",
       "textScale": "200%",
       "overflow": false
     },

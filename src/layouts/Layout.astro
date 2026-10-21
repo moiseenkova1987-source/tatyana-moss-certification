@@ -10,6 +10,7 @@ const {
   crumbs = [],
   faq = [],
   service,
+  article,
   noindex = false,
   noindexFollow = false,
   homePage = false,
@@ -20,6 +21,7 @@ const {
   crumbs?: { name: string; path: string }[];
   faq?: FAQ[];
   service?: string;
+  article?: { headline: string; description: string; datePublished: string; dateModified: string };
   noindex?: boolean;
   noindexFollow?: boolean;
   homePage?: boolean;
@@ -51,6 +53,20 @@ const graph: Record<string, unknown>[] = [
           provider: { '@id': expertId },
           url: canonical,
           serviceType: 'Экспертное сопровождение и консультация',
+        },
+      ]
+    : []),
+  ...(article
+    ? [
+        {
+          '@type': 'Article',
+          headline: article.headline,
+          description: article.description,
+          author: { '@id': expertId },
+          datePublished: article.datePublished,
+          dateModified: article.dateModified,
+          mainEntityOfPage: { '@id': canonical },
+          url: canonical,
         },
       ]
     : []),

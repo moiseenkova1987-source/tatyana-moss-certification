@@ -1,0 +1,143 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { practiceArticles, practiceDate } from '../../data/practice';
+import type { PracticeArticle } from '../../data/practice';
+import { site, url } from '../../data/site';
+export function getStaticPaths() {
+  return practiceArticles.map((article) => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
+}
+const { article } = Astro.props as { article: PracticeArticle };
+---
+
+<Layout
+  title={article.title}
+  description={article.description}
+  faq={article.faq}
+  article={{
+    headline: article.h1,
+    description: article.description,
+    datePublished: article.datePublished,
+    dateModified: article.dateModified,
+  }}
+  crumbs={[
+    { name: 'Разборы и практика', path: '/practice/' },
+    { name: article.title, path: `/practice/${article.slug}/` },
+  ]}
+>
+  <article class="practice-article">
+    <header class="page-hero article-heading">
+      <p class="eyebrow">Разборы и практика</p>
+      <h1>{article.h1}</h1>
+      <p class="article-meta">
+        <a href={url('/about/')}>{site.name}</a>
+        <span aria-hidden="true"> · </span>
+        <time datetime={article.datePublished}>{practiceDate(article.datePublished)}</time>
+      </p>
+    </header>
+    <div class="article-text">
+      {article.blocks.map((block) =>
+        block.type === 'heading' ? (
+          <h2>{block.text}</h2>
+        ) : block.type === 'list' ? (
+          <ul>
+            {block.items?.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        ) : block.type === 'link' ? (
+          <p>
+            <a
+              class={block.href === '/proverka-tovara/' ? 'button' : 'text-link'}
+              href={url(block.href!)}
+            >
+              {block.text}
+            </a>
+          </p>
+        ) : (
+          <p>
+            {block.linkText ? (
+              <>
+                {block.text!.slice(0, block.text!.indexOf(block.linkText))}
+                <a href={url(block.href!)}>{block.linkText}</a>
+                {block.text!.slice(block.text!.indexOf(block.linkText) + block.linkText.length)}
+              </>
+            ) : block.emphasis ? (
+              <strong>{block.text}</strong>
+            ) : (
+              block.text
+            )}
+          </p>
+        ),
+      )}
+    </div>
+    <section class="faq article-faq" aria-labelledby="article-faq-title">
+      <h2 id="article-faq-title">Частые вопросы</h2>
+      {article.faq.map((item) => (
+        <details>
+          <summary>
+            {item.q}
+            <span aria-hidden="true">+</span>
+          </summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </section>
+    <p class="article-return">
+      <a class="text-link" href={url('/practice/')}>
+        ← Все разборы и практика
+      </a>
+    </p>
+  </article>
+</Layout>
+<style>
+  .practice-article {
+    max-width: 76ch;
+    margin-inline: auto;
+    padding-bottom: var(--section-space);
+  }
+  .article-heading {
+    padding-bottom: var(--space-4);
+  }
+  .article-heading h1 {
+    font-size: clamp(2.1rem, 4vw, 3.5rem);
+    line-height: 1.14;
+  }
+  .article-meta {
+    color: var(--color-muted);
+    font-size: var(--text-small);
+  }
+  .article-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+  }
+  .article-text h2,
+  .article-faq h2 {
+    font-size: clamp(1.65rem, 3vw, 2.4rem);
+    line-height: 1.25;
+    margin-top: var(--space-5);
+    margin-bottom: var(--space-3);
+  }
+  .article-text p {
+    margin-bottom: 1.25em;
+  }
+  .article-text li {
+    margin-bottom: 0.55em;
+  }
+  .article-text ul {
+    padding-left: 1.4em;
+  }
+  .article-text strong {
+    color: var(--color-text);
+  }
+  .article-faq {
+    display: block;
+    margin-top: var(--space-5);
+  }
+  .article-return {
+    margin-top: var(--space-5);
+  }
+</style>

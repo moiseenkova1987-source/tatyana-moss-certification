@@ -81,6 +81,22 @@
       "faq": 0
     },
     {
+      "page": "practice\\index.html",
+      "title": "Разборы и практика по сертификации — Татьяна Моисеенкова",
+      "description": "Практические разборы по сертификации, декларациям, импорту и документам на товар: что проверить перед закупкой, ввозом или продажей продукции.",
+      "h1": "Разборы и практика по сертификации и техническому регулированию",
+      "canonical": "https://tm-cert.ru/practice/",
+      "faq": 0
+    },
+    {
+      "page": "practice\\sertifikat-deklaraciya-ili-otkaznoe-pismo\\index.html",
+      "title": "Сертификат, декларация или отказное письмо: что нужно на товар",
+      "description": "Как понять, нужен на товар сертификат, декларация или отказное письмо. От чего зависит документ и что проверить до закупки или ввоза продукции.",
+      "h1": "Сертификат, декларация или отказное письмо: как понять, какой документ нужен на товар",
+      "canonical": "https://tm-cert.ru/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/",
+      "faq": 5
+    },
+    {
       "page": "privacy\\index.html",
       "title": "Политика в отношении обработки персональных данных — Татьяна Моисеенкова",
       "description": "Политика обработки персональных данных сайта tm-cert.ru: оператор, цели, состав данных, сроки хранения, защита и порядок отзыва согласия.",
@@ -134,6 +150,8 @@
     "https://tm-cert.ru/services/",
     "https://tm-cert.ru/about/",
     "https://tm-cert.ru/contacts/",
+    "https://tm-cert.ru/practice/",
+    "https://tm-cert.ru/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/",
     "https://tm-cert.ru/proverka-tovara/",
     "https://tm-cert.ru/deklaraciya-sootvetstviya/",
     "https://tm-cert.ru/sertifikaciya-produkcii/",

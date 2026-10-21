@@ -17,6 +17,8 @@ const routes = [
   '/marketplaces/',
   '/about/',
   '/contacts/',
+  '/practice/',
+  '/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/',
   '/privacy/',
   '/consent/',
   '/privacy-policy/',
@@ -25,6 +27,8 @@ const routes = [
 const results = [],
   errors = [];
 const visualRoutes = [
+  '/practice/',
+  '/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/',
   '/',
   '/services/',
   '/about/',
@@ -52,7 +56,7 @@ for (const width of [360, 390, 768, 1440]) {
       errors.push(`${width} ${route}: HTTP ${response.status()}, overflow=${overflow}`);
     results.push({ width, route, status: response.status(), overflow });
     if ([390, 1440].includes(width) && visualRoutes.includes(route)) {
-      const name = route === '/' ? 'home' : route.split('/')[1];
+      const name = route === '/' ? 'home' : route.split('/').filter(Boolean).join('-');
       await page.screenshot({ path: `qa/screenshots/final-${name}-${width}.png`, fullPage: true });
       await page.screenshot({ path: `qa/screenshots/final-${name}-${width}-viewport.png` });
     }
@@ -86,7 +90,7 @@ for (const width of [390, 1440]) {
         ),
       );
     }
-    const name = route === '/' ? 'home' : route.split('/')[1];
+    const name = route === '/' ? 'home' : route.split('/').filter(Boolean).join('-');
     await page.screenshot({ path: `qa/screenshots/zoom-${name}-${width}.png`, fullPage: true });
   }
 }

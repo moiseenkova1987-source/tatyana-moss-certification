@@ -98,6 +98,21 @@ const isCheck = s.slug === 'proverka-tovara';
       </p>
     </aside>
   </div>
+  {[
+    'proverka-tovara',
+    'sertifikaciya-produkcii',
+    'deklaraciya-sootvetstviya',
+    'otkaznoe-pismo',
+    'marketplaces',
+  ].includes(s.slug) && (
+    <p class="inline-note">
+      Подробнее о выборе документа — в разборе{' '}
+      <a href={url('/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/')}>
+        «Сертификат, декларация или отказное письмо»
+      </a>
+      .
+    </p>
+  )}
   <FAQ items={s.faq} />
   <section class="section" style="padding-top:0">
     <div class="section-heading">
