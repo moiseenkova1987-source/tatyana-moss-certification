@@ -19,18 +19,20 @@ import { url } from '../../data/site';
     </p>
   </section>
   <section class="practice-cards" aria-label="Материалы">
-    {practiceArticles.map((article) => (
-      <article class="practice-card">
-        <time datetime={article.datePublished}>{practiceDate(article.datePublished)}</time>
-        <h2>
-          <a href={url(`/practice/${article.slug}/`)}>{article.title}</a>
-        </h2>
-        <p>{article.description}</p>
-        <a class="text-link" href={url(`/practice/${article.slug}/`)}>
-          Читать разбор ↗
-        </a>
-      </article>
-    ))}
+    {[...practiceArticles]
+      .sort((a, b) => b.datePublished.localeCompare(a.datePublished))
+      .map((article) => (
+        <article class="practice-card">
+          <time datetime={article.datePublished}>{practiceDate(article.datePublished)}</time>
+          <h2>
+            <a href={url(`/practice/${article.slug}/`)}>{article.title}</a>
+          </h2>
+          <p>{article.description}</p>
+          <a class="text-link" href={url(`/practice/${article.slug}/`)}>
+            Читать разбор ↗
+          </a>
+        </article>
+      ))}
   </section>
 </Layout>
 <style>

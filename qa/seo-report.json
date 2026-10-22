@@ -89,6 +89,14 @@
       "faq": 0
     },
     {
+      "page": "practice\\kak-opredelit-kod-tn-ved\\index.html",
+      "title": "Как определить код ТН ВЭД товара и почему от него зависят документы",
+      "description": "Как определить код ТН ВЭД товара, какие характеристики нужно учитывать и почему ошибочный код может повлиять на сертификацию, маркировку и импорт.",
+      "h1": "Как определить код ТН ВЭД и почему от него зависят документы на товар",
+      "canonical": "https://tm-cert.ru/practice/kak-opredelit-kod-tn-ved/",
+      "faq": 5
+    },
+    {
       "page": "practice\\sertifikat-deklaraciya-ili-otkaznoe-pismo\\index.html",
       "title": "Сертификат, декларация или отказное письмо: что нужно на товар",
       "description": "Как понять, нужен на товар сертификат, декларация или отказное письмо. От чего зависит документ и что проверить до закупки или ввоза продукции.",
@@ -151,6 +159,7 @@
     "https://tm-cert.ru/about/",
     "https://tm-cert.ru/contacts/",
     "https://tm-cert.ru/practice/",
+    "https://tm-cert.ru/practice/kak-opredelit-kod-tn-ved/",
     "https://tm-cert.ru/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/",
     "https://tm-cert.ru/proverka-tovara/",
     "https://tm-cert.ru/deklaraciya-sootvetstviya/",

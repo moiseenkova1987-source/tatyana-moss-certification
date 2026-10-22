@@ -35,6 +35,13 @@ const { article } = Astro.props as { article: PracticeArticle };
         <a href={url('/about/')}>{site.name}</a>
         <span aria-hidden="true"> · </span>
         <time datetime={article.datePublished}>{practiceDate(article.datePublished)}</time>
+        {article.dateModified !== article.datePublished && (
+          <span>
+            {' '}
+            · Обновлено:{' '}
+            <time datetime={article.dateModified}>{practiceDate(article.dateModified)}</time>
+          </span>
+        )}
       </p>
     </header>
     <div class="article-text">

@@ -19,6 +19,7 @@ const paths = [
   '/contacts/',
   '/practice/',
   '/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/',
+  '/practice/kak-opredelit-kod-tn-ved/',
 ];
 const legal = ['/privacy/', '/personal-data-consent/'];
 const old = { '/consent/': '/personal-data-consent/', '/privacy-policy/': '/privacy/' };
@@ -47,7 +48,7 @@ try {
     const r = await context.request.get(base + path, { maxRetries: 3 });
     assert.equal(r.status(), 200);
     const html = await r.text();
-    if (path === '/practice/sertifikat-deklaraciya-ili-otkaznoe-pismo/') {
+    if (path.startsWith('/practice/') && path !== '/practice/') {
       const $ = load(html);
       const graph = JSON.parse($('script[type="application/ld+json"]').text())['@graph'];
       const article = graph.find((item) => item['@type'] === 'Article');
@@ -68,8 +69,11 @@ try {
         assert($('.faq').text().includes(item.name));
         assert($('.faq').text().includes(item.acceptedAnswer.text));
       }
-      assert.equal(article.datePublished, '2026-10-21');
-      assert.equal(article.dateModified, '2026-10-21');
+      assert.equal(
+        article.datePublished,
+        path.includes('kak-opredelit') ? '2026-10-22' : '2026-10-21',
+      );
+      assert.equal(article.dateModified, '2026-10-22');
     }
     const expected = paths.includes(path)
       ? 'index, follow'
@@ -104,6 +108,35 @@ try {
         path + ' 200% overflow',
       );
     }
+  }
+  await page.goto(base + '/practice/', { waitUntil: 'networkidle' });
+  assert.equal(await page.locator('.practice-card').count(), 2);
+  assert.equal(
+    await page.locator('.practice-card h2 a').first().getAttribute('href'),
+    '/practice/kak-opredelit-kod-tn-ved/',
+  );
+  for (const slug of ['kak-opredelit-kod-tn-ved', 'sertifikat-deklaraciya-ili-otkaznoe-pismo']) {
+    await page.goto(base + '/practice/' + slug + '/', { waitUntil: 'networkidle' });
+    for (const summary of await page.locator('.faq summary').all()) {
+      await summary.focus();
+      assert(await summary.evaluate((el) => document.activeElement === el));
+      await page.keyboard.press('Enter');
+      assert(await summary.evaluate((el) => el.parentElement.open));
+      await page.keyboard.press('Enter');
+    }
+    const related = page.locator(
+      '.article-text a[href="/practice/' +
+        (slug === 'kak-opredelit-kod-tn-ved'
+          ? 'sertifikat-deklaraciya-ili-otkaznoe-pismo'
+          : 'kak-opredelit-kod-tn-ved') +
+        '/"]',
+    );
+    assert.equal(await related.count(), 1);
+    await related.focus();
+    assert(await related.evaluate((el) => document.activeElement === el));
+    const target = await related.getAttribute('href');
+    await page.keyboard.press('Enter');
+    await page.waitForURL(base + target);
   }
   await page.goto(base + '/contacts/', { waitUntil: 'networkidle' });
   assert.equal(await page.locator('.direct-contact-actions a').count(), 4);
